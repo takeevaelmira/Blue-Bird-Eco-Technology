@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
             const requestPayload = {
                 providerId: clientData.providerId || 2,
                 offset: clientData.offset || 0,
-                limit: 1000,
+                limit: 1000000,
                 filters: {
                     saleOnly: true,
                     yearMin: requestedYearMin,
