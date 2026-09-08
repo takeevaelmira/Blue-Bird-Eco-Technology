@@ -1,0 +1,15 @@
+.section{
+    padding: 20rem 0 15rem;
+}
+
+.section--light{
+    background-color: var(--light);
+    background-image: 
+    repeating-linear-gradient(
+        to right,
+        transparent 0px,
+        transparent 384px,
+        #ededed 384px,
+        #ededed 385px,
+    );
+}

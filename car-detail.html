@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title data-en="Car Details - Blue Bird Eco Technology" data-ar="تفاصيل السيارة - بلو بيرد للتكنولوجيا البيئية">
+        Car Details - Blue Bird Eco Technology
+    </title>
+    <style>
+        .detail-container { max-width: 1000px; margin: 3rem auto; padding: 0 2rem; }
+        .gallery { display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-bottom: 2rem; }
+        .main-image { width: 100%; max-height: 500px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border-color); }
+        .thumbnails { display: flex; gap: 0.5rem; overflow-x: auto; width: 100%; padding-bottom: 10px; }
+        .thumb { width: 90px; height: 65px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.6; border: 2px solid transparent; transition: 0.2s; flex-shrink: 0; }
+        .thumb.active { opacity: 1; border-color: var(--primary-color, #007bff); }
+        .info-card { background: var(--page-background); border: 1px solid var(--border-color); padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        .specs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .spec-item { background: rgba(0,0,0,0.03); padding: 10px 14px; border-radius: 8px; }
+        .spec-label { font-size: 0.85rem; color: #666; }
+        .spec-value { font-weight: 600; font-size: 1.05rem; }
+        .price-box { font-size: 1.5rem; font-weight: 700; color: #2e7d32; margin-bottom: 0.5rem; }
+        .delivery-box { font-size: 1.1rem; color: #555; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a class="header-logo" href="cars.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+            <span class="header-brand" data-en="Back to Catalog" data-ar="العودة إلى الكتالوج">← Back to Catalog</span>
+        </a>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo" style="width: 24px; height: 24px;">
+            <span class="header-brand" style="font-size: 1rem;">Blue Bird</span>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn" id="settingsButton" type="button" data-en="Settings" data-ar="الإعدادات">
+                Settings
+            </button>
+            <a class="btn" href="#" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+        </div>
+    </header>
+
+    <main class="detail-container">
+        <div id="carDetailsContent">
+            <p data-en="Loading car details..." data-ar="جاري تحميل تفاصيل السيارة...">Loading car details...</p>
+        </div>
+    </main>
+
+    <dialog id="settingsDialog">
+        <form method="dialog">
+            <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
+
+            <label for="languageSelect" data-en="Language" data-ar="اللغة">Language</label>
+            <select id="languageSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+
+            <label for="themeSelect" data-en="Theme" data-ar="المظهر">Theme</label>
+            <select id="themeSelect" aria-label="Theme">
+                <option value="light" data-en="Light" data-ar="فاتح">Light</option>
+                <option value="dark" data-en="Dark" data-ar="داكن">Dark</option>
+            </select>
+
+            <div>
+                <button type="submit" data-en="Close" data-ar="إغلاق">Close</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const settingsButton = document.getElementById("settingsButton");
+        const settingsDialog = document.getElementById("settingsDialog");
+        const languageSelect = document.getElementById("languageSelect");
+        const themeSelect = document.getElementById("themeSelect");
+
+        const savedLanguage = localStorage.getItem("language") || "en";
+        const savedTheme = localStorage.getItem("theme") || "light";
+
+        languageSelect.value = savedLanguage;
+        themeSelect.value = savedTheme;
+
+        applyLanguage(savedLanguage);
+        applyTheme(savedTheme);
+
+        settingsButton.addEventListener("click", () => {
+            settingsDialog.showModal();
+        });
+
+        languageSelect.addEventListener("change", (event) => {
+            const language = event.target.value;
+            localStorage.setItem("language", language);
+            applyLanguage(language);
+        });
+
+        themeSelect.addEventListener("change", (event) => {
+            const theme = event.target.value;
+            localStorage.setItem("theme", theme);
+            applyTheme(theme);
+        });
+
+        function applyLanguage(language) {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+
+            document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
+                element.textContent = element.dataset[language];
+            });
+
+            const titleEl = document.querySelector("title");
+            if (titleEl && titleEl.dataset[language]) {
+                titleEl.textContent = titleEl.dataset[language];
+            }
+
+            languageSelect.setAttribute("aria-label", language === "ar" ? "اللغة" : "Language");
+            themeSelect.setAttribute("aria-label", language === "ar" ? "المظهر" : "Theme");
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+        }
+
+        const carDataStr = localStorage.getItem('selectedCar');
+        const contentContainer = document.getElementById('carDetailsContent');
+
+        if (!carDataStr) {
+            contentContainer.innerHTML = '<h2>Car not found</h2><p><a href="cars.html">← Back to catalog</a></p>';
+        } else {
+            const car = JSON.parse(carDataStr);
+
+            let title = car.title;
+            if (!title && car.vehicleIdentity) {
+                title = `${car.vehicleIdentity.brand || ''} ${car.vehicleIdentity.model || ''} ${car.vehicleIdentity.generation || ''} ${car.vehicleIdentity.modification || ''}`.trim();
+            }
+            title = title || 'Vehicle Details';
+
+            let priceText = 'Price on request';
+            let rawPrice = 0;
+            if (car.pricing && car.pricing.total) {
+                rawPrice = car.pricing.total;
+                priceText = `${Math.round(rawPrice).toLocaleString()} ${car.pricing.currency || 'USD'}`;
+            } else if (car.price) {
+                priceText = `${car.price} 万`;
+            }
+
+            const deliveryCost = rawPrice > 0 ? `${Math.round(rawPrice * 0.12).toLocaleString()} USD (Estimated)` : 'Calculate on request';
+
+            let images = [];
+            if (car.photoUrls && Array.isArray(car.photoUrls) && car.photoUrls.length > 0) {
+                images = car.photoUrls;
+            } else if (car.photos && Array.isArray(car.photos) && car.photos.length > 0) {
+                images = car.photos;
+            } else if (car.thumbnailUrl) {
+                images = [car.thumbnailUrl];
+            } else {
+                images = ['assets/images/home_img.png'];
+            }
+
+            const description = car.description || car.memo || 'No detailed description provided for this vehicle.';
+
+            const brand = car.vehicleIdentity?.brand || 'N/A';
+            const model = car.vehicleIdentity?.model || 'N/A';
+            const year = car.year || (car.title?.match(/20\d{2}/) ? car.title.match(/20\d{2}/)[0] : '2022+');
+            const mileage = car.mileage ? `${car.mileage.toLocaleString()} km` : (car.specs?.mileage || 'N/A');
+
+            contentContainer.innerHTML = `
+                <h1 style="margin-bottom: 1.5rem;">${title}</h1>
+                
+                <div class="gallery">
+                    <img id="mainGalleryImage" class="main-image" src="${images[0]}" alt="${title}" referrerpolicy="no-referrer" onerror="this.src='assets/images/home_img.png'">
+                    <div class="thumbnails">
+                        ${images.map((img, idx) => `
+                            <img class="thumb ${idx === 0 ? 'active' : ''}" src="${img}" alt="Thumbnail ${idx + 1}" referrerpolicy="no-referrer" onclick="changeMainImage('${img}', this)" onerror="this.src='assets/images/home_img.png'">
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="price-box">Price: ${priceText}</div>
+                    <div class="delivery-box">📦 Estimated Delivery Cost: <strong>${deliveryCost}</strong></div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Vehicle Specifications</h3>
+                    <div class="specs-grid">
+                        <div class="spec-item"><div class="spec-label">Brand</div><div class="spec-value">${brand}</div></div>
+                        <div class="spec-item"><div class="spec-label">Model</div><div class="spec-value">${model}</div></div>
+                        <div class="spec-item"><div class="spec-label">Year</div><div class="spec-value">${year}</div></div>
+                        <div class="spec-item"><div class="spec-label">Mileage</div><div class="spec-value">${mileage}</div></div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Description</h3>
+                    <p style="margin-top: 0.8rem; line-height: 1.6; color: var(--text-color);">${description}</p>
+                </div>
+            `;
+        }
+
+        function changeMainImage(src, element) {
+            document.getElementById('mainGalleryImage').src = src;
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>

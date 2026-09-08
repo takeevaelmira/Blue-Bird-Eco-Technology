@@ -1,0 +1,26 @@
+.nav {
+    display: flex;
+    gap: 2rem;
+
+    padding: 2.4rem 0;
+
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    color: var(--light);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav {
+        gap: 2rem;
+        padding: 0;
+        font-size: 1.6rem;
+    }
+}

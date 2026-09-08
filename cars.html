@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title data-en="Hybrid Cars - Blue Bird Eco Technology" data-ar="السيارات الهیبریدیة - بلو بيرد للتكنولوجيا البيئية">
+        Cars - Blue Bird Eco Technology
+    </title>
+</head>
+<body>
+
+    <header class="header">
+        <a class="header-logo" href="index.html">
+            <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo">
+            <span class="header-brand">Blue Bird</span>
+        </a>
+
+        <nav class="nav">
+            <a class="nav-link" href="index.html" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a class="nav-link" href="cars.html" data-en="Cars" data-ar="السيارات">Cars</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="btn" id="settingsButton" type="button" data-en="Settings" data-ar="الإعدادات">
+                Settings
+            </button>
+            <a class="btn" href="#" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+        </div>
+    </header>
+
+    <main class="section" style="padding-top: 4rem;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            
+            <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" id="carSearchInput" 
+                       data-en-placeholder="Search hybrid cars..." 
+                       data-ar-placeholder="ابحث عن السيارات الهیبریدیة..." 
+                       placeholder="Search hybrid cars..." 
+                       style="flex: 1; min-width: 250px; padding: 12px 16px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--page-background); color: var(--text-color);">
+                <button id="searchBtn" class="btn" onclick="handleSearch()" style="padding: 12px 24px;" data-en="Search" data-ar="بحث">
+                    Search
+                </button>
+            </div>
+
+            <div style="margin-bottom: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <select id="yearSelect" style="flex: 1; min-width: 150px; padding: 12px 16px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--page-background); color: var(--text-color);">
+                    <option value="" data-en="All Years (2022-2026)" data-ar="جميع السنوات">All Years (2022-2026)</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+
+                <select id="brandSelect" style="flex: 1; min-width: 150px; padding: 12px 16px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--page-background); color: var(--text-color);">
+                    <option value="" data-en="All Brands" data-ar="جميع العلامات التجارية">All Brands</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="Tesla">Tesla</option>
+                    <option value="Ferrari">Ferrari</option>
+                    <option value="Porsche">Porsche</option>
+                    <option value="Audi">Audi</option>
+                </select>
+
+                <select id="mileageSelect" style="flex: 1; min-width: 150px; padding: 12px 16px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--page-background); color: var(--text-color);">
+                    <option value="" data-en="Any Mileage" data-ar="أي مسافة مقطوعة">Any Mileage</option>
+                    <option value="30000">Up to 30,000 km</option>
+                    <option value="60000">Up to 60,000 km</option>
+                    <option value="100000">Up to 100,000 km</option>
+                </select>
+            </div>
+            
+            <div id="cars-container" class="cars-grid">
+                <p data-en="Loading cars..." data-ar="جاري تحميل السيارات...">Loading cars...</p>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0;">
+                <button id="loadMoreBtn" class="btn" onclick="loadMoreCars()" style="padding: 12px 24px; cursor: pointer; font-size: 1rem;" data-en="Load More" data-ar="تحميل المزيد">
+                    Load More
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <dialog id="settingsDialog">
+        <form method="dialog">
+            <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
+
+            <label for="languageSelect" data-en="Language" data-ar="اللغة">Language</label>
+            <select id="languageSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+
+            <label for="themeSelect" data-en="Theme" data-ar="المظهر">Theme</label>
+            <select id="themeSelect" aria-label="Theme">
+                <option value="light" data-en="Light" data-ar="فاتح">Light</option>
+                <option value="dark" data-en="Dark" data-ar="داكن">Dark</option>
+            </select>
+
+            <div>
+                <button type="submit" data-en="Close" data-ar="إغلاق">Close</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const settingsButton = document.getElementById("settingsButton");
+        const settingsDialog = document.getElementById("settingsDialog");
+        const languageSelect = document.getElementById("languageSelect");
+        const themeSelect = document.getElementById("themeSelect");
+
+        const savedLanguage = localStorage.getItem("language") || "en";
+        const savedTheme = localStorage.getItem("theme") || "light";
+
+        languageSelect.value = savedLanguage;
+        themeSelect.value = savedTheme;
+
+        applyLanguage(savedLanguage);
+        applyTheme(savedTheme);
+
+        settingsButton.addEventListener("click", () => {
+            settingsDialog.showModal();
+        });
+
+        languageSelect.addEventListener("change", (event) => {
+            const language = event.target.value;
+            localStorage.setItem("language", language);
+            applyLanguage(language);
+        });
+
+        themeSelect.addEventListener("change", (event) => {
+            const theme = event.target.value;
+            localStorage.setItem("theme", theme);
+            applyTheme(theme);
+        });
+
+        function applyLanguage(language) {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+
+            document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
+                element.textContent = element.dataset[language];
+            });
+
+            const searchInput = document.getElementById("carSearchInput");
+            if (searchInput) {
+                const placeholderKey = language === "ar" ? "data-ar-placeholder" : "data-en-placeholder";
+                if (searchInput.hasAttribute(placeholderKey)) {
+                    searchInput.placeholder = searchInput.getAttribute(placeholderKey);
+                }
+            }
+
+            const titleEl = document.querySelector("title");
+            if (titleEl && titleEl.dataset[language]) {
+                titleEl.textContent = titleEl.dataset[language];
+            }
+
+            languageSelect.setAttribute("aria-label", language === "ar" ? "اللغة" : "Language");
+            themeSelect.setAttribute("aria-label", language === "ar" ? "المظهر" : "Theme");
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+        }
+
+        let currentOffset = 0;
+        const limitPerPage = 11;
+
+        async function fetchCars(isLoadMore = false) {
+            const container = document.getElementById('cars-container');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const searchInput = document.getElementById('carSearchInput');
+            const yearSelect = document.getElementById('yearSelect');
+            const brandSelect = document.getElementById('brandSelect');
+            const mileageSelect = document.getElementById('mileageSelect');
+            
+            const searchQuery = searchInput ? searchInput.value.trim() : '';
+            const selectedYear = yearSelect ? yearSelect.value : '';
+            const selectedBrand = brandSelect ? brandSelect.value : '';
+            const selectedMileage = mileageSelect ? mileageSelect.value : '';
+            
+            if (!isLoadMore) {
+                currentOffset = 0;
+                container.innerHTML = '<p data-en="Loading cars..." data-ar="جاري تحميل السيارات...">Loading cars...</p>';
+                applyLanguage(localStorage.getItem("language") || "en");
+            } else {
+                loadMoreBtn.textContent = localStorage.getItem("language") === "ar" ? "جاري التحميل..." : "Loading...";
+                loadMoreBtn.disabled = true;
+            }
+
+            try {
+                const requestBody = {
+                    "providerId": 2,
+                    "offset": currentOffset,
+                    "limit": limitPerPage,
+                    "query": searchQuery,
+                    "filters": {
+                        "saleOnly": true,
+                        "fuelType": "Hybrid", 
+                        "yearMin": selectedYear ? parseInt(selectedYear, 10) : 2022,
+                        ...(selectedYear ? { "yearMax": parseInt(selectedYear, 10) } : {}),
+                        ...(selectedBrand ? { "brand": selectedBrand } : {}),
+                        ...(selectedMileage ? { "mileageMax": parseInt(selectedMileage, 10) } : {})
+                    }
+                };
+
+                const response = await fetch('https://blue-bird-eco-technology.onrender.com/api/search-cars', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // ВЫВОД ПОЛНОГО ОТВЕТА СЕРВЕРА В КОНСОЛЬ
+                console.log("=== FULL SERVER RESPONSE ===", data);
+
+                let cars = [];
+                if (Array.isArray(data)) {
+                    cars = data;
+                } else if (data.items) {
+                    cars = data.items;
+                } else if (data.listings) {
+                    cars = data.listings;
+                } else if (data.result) {
+                    cars = data.result;
+                } else {
+                    cars = [data];
+                }
+
+                // ДЕТАЛЬНЫЙ ВЫВОД КАЖДОЙ МАШИНЫ И ЕЁ ТИПА ТОПЛИВА В КОНСОЛЬ
+                console.log(`=== CHECKING ${cars.length} CARS OBJECTS & FUEL TYPES ===`);
+                cars.forEach((car, index) => {
+                    const fuelNameVal = (car.spec && car.spec.fuelName) || (car.specs && car.specs.fuelName) || car.fuelType || 'Unknown';
+                    console.log(`Car #${index + 1}:`, {
+                        title: car.title,
+                        fuelName: fuelNameVal,
+                        fullObject: car
+                    });
+                });
+
+                if (!isLoadMore) {
+                    container.innerHTML = '';
+                }
+
+                if (cars.length === 0) {
+                    if (!isLoadMore) {
+                        const currentLang = localStorage.getItem("language") || "en";
+                        container.innerHTML = currentLang === "ar" ? 
+                            '<p>لا توجد نتائج تطابق بحثك أو الشروط المطلوبة.</p>' : 
+                            '<p>No hybrid cars found matching your criteria.</p>';
+                    }
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.style.display = 'none';
+                    return;
+                } else {
+                    loadMoreBtn.style.display = 'inline-block';
+                }
+
+                renderCars(cars, isLoadMore);
+
+                currentOffset += limitPerPage;
+                const currentLang = localStorage.getItem("language") || "en";
+                loadMoreBtn.textContent = currentLang === "ar" ? "تحميل المزيد" : "Load More";
+                loadMoreBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Error loading catalog:', error);
+                const currentLang = localStorage.getItem("language") || "en";
+                container.innerHTML = currentLang === "ar" ? 
+                    `<p style="color: red;">فشل تحميل السيارات. تأكد من تشغيل الخادم المحلي.</p>` : 
+                    `<p style="color: red;">Failed to load cars. Make sure server is running.</p>`;
+                loadMoreBtn.disabled = false;
+            }
+        }
+
+        function handleSearch() {
+            currentOffset = 0;
+            fetchCars(false);
+        }
+
+        document.getElementById('carSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        document.getElementById('yearSelect').addEventListener('change', () => handleSearch());
+        document.getElementById('brandSelect').addEventListener('change', () => handleSearch());
+        document.getElementById('mileageSelect').addEventListener('change', () => handleSearch());
+
+        function renderCars(cars, append = false) {
+            const container = document.getElementById('cars-container');
+            if (!append) container.innerHTML = '';
+
+            cars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.style.cursor = 'pointer';
+
+                card.addEventListener('click', () => {
+                    localStorage.setItem('selectedCar', JSON.stringify(car));
+                    window.location.href = 'car-detail.html';
+                });
+
+                let title = car.title;
+                if (!title && car.vehicleIdentity) {
+                    title = `${car.vehicleIdentity.brand} ${car.vehicleIdentity.model} ${car.vehicleIdentity.generation || ''} ${car.vehicleIdentity.modification || ''}`.trim();
+                }
+                title = title || 'Vehicle';
+
+                let priceText = localStorage.getItem("language") === "ar" ? 'السعر عند الطلб' : 'Price on request';
+                if (car.pricing && car.pricing.total) {
+                    priceText = `${Math.round(car.pricing.total).toLocaleString()} ${car.pricing.currency || 'USD'}`;
+                } else if (car.price) {
+                    priceText = `${car.price} 万`;
+                }
+
+                const imageUrl = car.thumbnailUrl 
+                    || (car.photoUrls && car.photoUrls.length > 0 ? car.photoUrls[0] : null)
+                    || 'assets/images/home_img.png';
+
+                card.innerHTML = `
+                    <img referrerpolicy="no-referrer" src="${imageUrl}" alt="${title}" class="car-image" onerror="this.src='assets/images/home_img.png'">
+                    <div class="car-info">
+                        <h3 class="car-title">${title}</h3>
+                        <div class="car-price">${priceText}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadMoreCars() {
+            fetchCars(true);
+        }
+
+        fetchCars(false);
+    </script>
+</body>
+</html>

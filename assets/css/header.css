@@ -1,0 +1,42 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem 6rem;
+}
+
+.header-logo{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.header-logo-icon{
+    display: block;
+    width: 5rem;
+    height: 5rem;
+}
+
+.header-brand{
+    margin-left: 1rem;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--light);
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1.5rem 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .header-logo-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    .header-brand {
+        font-size: 1.8rem;
+    }
+}
