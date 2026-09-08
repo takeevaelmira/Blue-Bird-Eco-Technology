@@ -81,25 +81,28 @@ const server = http.createServer((req, res) => {
                         
                         // 1. Гибкая фильтрация по типу топлива (baseFuel / fuelName)
                         if (requestedBaseFuel) {
-                            items = items.filter(car => {
-                                const baseFuel = (car.pricing && car.pricing.baseFuel) ? car.pricing.baseFuel.toLowerCase() : '';
-                                const fuelName = (
-                                    (car.spec && car.spec.fuelName) || 
-                                    (car.specs && car.specs.fuelName) || 
-                                    ''
-                                ).toLowerCase();
+                            // Смягченная фильтрация: проверяем поле топлива ИЛИ название машины
+items = items.filter(car => {
+    const fuelName = (
+        (car.pricing && car.pricing.baseFuel) ||
+        (car.spec && car.spec.fuelName) || 
+        (car.specs && car.specs.fuelName) || 
+        ''
+    ).toLowerCase();
 
-                                if (requestedBaseFuel === 'hybrid') {
-                                    return baseFuel.includes('hybrid') || 
-                                           fuelName.includes('hybrid') || 
-                                           fuelName.includes('hev') || 
-                                           fuelName.includes('phev') || 
-                                           fuelName.includes('гибрид');
-                                } else if (requestedBaseFuel === 'petrol') {
-                                    return baseFuel.includes('petrol') || baseFuel.includes('gasoline') || fuelName.includes('petrol');
-                                }
-                                return true;
-                            });
+    const titleStr = (car.title || '').toLowerCase();
+
+    const isHybridFuel = fuelName.includes('hybrid') || 
+                           fuelName.includes('hev') || 
+                           fuelName.includes('phev') || 
+                           fuelName.includes('гибрид');
+
+    const isHybridInTitle = titleStr.includes('hybrid') || 
+                            titleStr.includes('гибрид');
+
+    // Машина проходит, если тип топлива совпал OR слово есть в названии
+    return isHybridFuel || isHybridInTitle;
+});
                         }
 
                         // 2. Фильтрация по году
