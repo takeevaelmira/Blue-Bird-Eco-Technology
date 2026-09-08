@@ -1,7 +1,7 @@
 const http = require('http');
 const https = require('https');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY;
 
 const server = http.createServer((req, res) => {
@@ -12,6 +12,13 @@ const server = http.createServer((req, res) => {
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
         res.end();
+        return;
+    }
+
+    // Health-check endpoint для предотвращения засыпания на Render
+    if (req.url === '/health' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok' }));
         return;
     }
 
@@ -29,11 +36,12 @@ const server = http.createServer((req, res) => {
             const requestedYearMax = clientData.filters && clientData.filters.yearMax ? clientData.filters.yearMax : null;
             const requestedBrand = clientData.filters && clientData.filters.brand ? clientData.filters.brand.toLowerCase() : null;
             const requestedMileageMax = clientData.filters && clientData.filters.mileageMax ? clientData.filters.mileageMax : null;
+            const requestedBaseFuel = clientData.filters && clientData.filters.baseFuel ? clientData.filters.baseFuel.toLowerCase() : null;
 
             const requestPayload = {
                 providerId: clientData.providerId || 2,
                 offset: clientData.offset || 0,
-                limit: 100, // Запрашиваем с запасом, так как строгая фильтрация отсеивает лишнее
+                limit: 100,
                 filters: {
                     saleOnly: true,
                     yearMin: requestedYearMin,
@@ -55,7 +63,7 @@ const server = http.createServer((req, res) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Content-Length': Buffer.byteLength(requestData),
-                    'x-api-key': API_KEY.trim()
+                    'x-api-key': API_KEY ? API_KEY.trim() : ''
                 }
             };
 
@@ -71,21 +79,30 @@ const server = http.createServer((req, res) => {
                         const parsed = JSON.parse(responseData);
                         let items = parsed.items || parsed.listings || parsed.result || (Array.isArray(parsed) ? parsed : []);
                         
-                        // СТРОГАЯ ФИЛЬТРАЦИЯ ТОЛЬКО ПО fuelName (игнорируем fuelType, название и т.д.)
-                        items = items.filter(car => {
-                            const fuelName = (
-                                (car.spec && car.spec.fuelName) || 
-                                (car.specs && car.specs.fuelName) || 
-                                ''
-                            ).toLowerCase();
+                        // 1. Гибкая фильтрация по типу топлива (baseFuel / fuelName)
+                        if (requestedBaseFuel) {
+                            items = items.filter(car => {
+                                const baseFuel = (car.pricing && car.pricing.baseFuel) ? car.pricing.baseFuel.toLowerCase() : '';
+                                const fuelName = (
+                                    (car.spec && car.spec.fuelName) || 
+                                    (car.specs && car.specs.fuelName) || 
+                                    ''
+                                ).toLowerCase();
 
-                            return fuelName.includes('hybrid') || 
-                                   fuelName.includes('hev') || 
-                                   fuelName.includes('phev') || 
-                                   fuelName.includes('гибрид');
-                        });
+                                if (requestedBaseFuel === 'hybrid') {
+                                    return baseFuel.includes('hybrid') || 
+                                           fuelName.includes('hybrid') || 
+                                           fuelName.includes('hev') || 
+                                           fuelName.includes('phev') || 
+                                           fuelName.includes('гибрид');
+                                } else if (requestedBaseFuel === 'petrol') {
+                                    return baseFuel.includes('petrol') || baseFuel.includes('gasoline') || fuelName.includes('petrol');
+                                }
+                                return true;
+                            });
+                        }
 
-                        // Фильтрация по году
+                        // 2. Фильтрация по году
                         items = items.filter(car => {
                             const titleStr = (car.title || '').toLowerCase();
                             const genStr = car.vehicleIdentity && car.vehicleIdentity.generation ? String(car.vehicleIdentity.generation) : '';
@@ -96,6 +113,8 @@ const server = http.createServer((req, res) => {
                                 year = parseInt(matchYear[0], 10);
                             } else if (car.year) {
                                 year = parseInt(car.year, 10);
+                            } else if (car.yearMonth) {
+                                year = parseInt(String(car.yearMonth).substring(0, 4), 10);
                             }
 
                             if (requestedYearMax) {
@@ -104,7 +123,7 @@ const server = http.createServer((req, res) => {
                             return year >= requestedYearMin;
                         });
 
-                        // Фильтрация по бренду
+                        // 3. Фильтрация по бренду
                         if (requestedBrand) {
                             items = items.filter(car => {
                                 const brandStr = car.vehicleIdentity && car.vehicleIdentity.brand ? car.vehicleIdentity.brand.toLowerCase() : '';
@@ -113,7 +132,7 @@ const server = http.createServer((req, res) => {
                             });
                         }
 
-                        // Фильтрация по пробегу
+                        // 4. Фильтрация по пробегу
                         if (requestedMileageMax) {
                             items = items.filter(car => {
                                 let mileage = null;
@@ -136,7 +155,7 @@ const server = http.createServer((req, res) => {
                             });
                         }
 
-                        // Фильтрация по поисковому запросу
+                        // 5. Фильтрация по поисковому запросу
                         if (clientData.query && clientData.query.trim() !== '') {
                             const q = clientData.query.trim().toLowerCase();
                             items = items.filter(car => {
@@ -147,7 +166,7 @@ const server = http.createServer((req, res) => {
                             });
                         }
 
-                        const clientLimit = clientData.limit || 11;
+                        const clientLimit = clientData.limit || 20;
                         const clientOffset = clientData.offset || 0;
                         const paginatedItems = items.slice(clientOffset, clientOffset + clientLimit);
 
@@ -179,5 +198,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Local proxy server running at: http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
