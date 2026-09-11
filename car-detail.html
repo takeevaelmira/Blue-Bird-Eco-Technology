@@ -10,7 +10,6 @@
     <title data-en="Car Details - Blue Bird Eco Technology" data-ar="تفاصيل السيارة - بلو بيرد للتكنولوجيا البيئية">
         Car Details - Blue Bird Eco Technology
     </title>
-    <!-- Google Identity Services Library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         .detail-container { max-width: 1000px; margin: 3rem auto; padding: 0 2rem; }
@@ -27,7 +26,6 @@
         .price-box { font-size: 1.5rem; font-weight: 700; color: #2e7d32; margin-bottom: 0.5rem; }
         .delivery-box { font-size: 1.1rem; color: #555; margin-bottom: 0; }
         
-        /* Стиль отзывов */
         .review-card { background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
         .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
         .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
@@ -135,12 +133,12 @@
             document.documentElement.dataset.theme = theme;
         }
 
-        // --- GOOGLE AUTH LOGIC ---
         let googleClient = null;
 
         async function initGoogleAuth() {
             try {
                 const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/config');
+                if (!res.ok) return;
                 const data = await res.json();
                 if (!data.clientId) return;
 
@@ -163,7 +161,7 @@
                                 if (userData && userData.name) {
                                     localStorage.setItem('googleUser', JSON.stringify(userData));
                                     updateAuthUI(userData);
-                                    loadReviews(currentCarId); // Перезагрузка отзывов для обновления интерфейса отправки
+                                    loadReviews(currentCarId);
                                 }
                             } catch (err) {
                                 console.error('Auth exchange error:', err);
@@ -219,7 +217,6 @@
             document.getElementById('signInBtn')?.addEventListener('click', triggerGoogleLogin);
         });
 
-        // --- CAR DETAILS & REVIEWS LOGIC ---
         const carDataStr = localStorage.getItem('selectedCar');
         const contentContainer = document.getElementById('carDetailsContent');
         let currentCarId = null;
@@ -340,7 +337,6 @@
                     `).join('');
                 }
 
-                // Проверка авторизации для отображения формы отправки отзыва
                 const userStr = localStorage.getItem('googleUser');
                 if (userStr) {
                     formEl.innerHTML = `
