@@ -247,7 +247,7 @@ const server = http.createServer((req, res) => {
                             items = items.filter(car => {
                                 const brandStr = car.vehicleIdentity && car.vehicleIdentity.brand ? car.vehicleIdentity.brand.toLowerCase() : '';
                                 const titleStr = (car.title || '').toLowerCase();
-                                return brandStr.includes(requestedBrand) || titleStr.includes(requestedBrand);
+                                return brandStr.includes(brandStr) || titleStr.includes(requestedBrand);
                             });
                         }
 
