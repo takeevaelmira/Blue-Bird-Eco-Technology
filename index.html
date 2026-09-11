@@ -10,7 +10,6 @@
     <title data-en="Home - Blue Bird Eco Technology" data-ar="الرئيسية - بلو بيرد للتكنولوجيا البيئية">
         Home - Blue Bird Eco Technology
     </title>
-    <!-- Google Identity Services Library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -159,12 +158,12 @@
             document.documentElement.dataset.theme = theme;
         }
 
-        // --- GOOGLE AUTH LOGIC ---
         let googleClient = null;
 
         async function initGoogleAuth() {
             try {
                 const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/config');
+                if (!res.ok) return;
                 const data = await res.json();
                 if (!data.clientId) return;
 
