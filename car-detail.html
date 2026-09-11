@@ -137,7 +137,7 @@
 
         async function initGoogleAuth() {
             try {
-                const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/config');
+                const res = await fetch('https://blue-bird-eco-technology-1.onrender.com/api/config');
                 if (!res.ok) return;
                 const data = await res.json();
                 if (!data.clientId) return;
@@ -149,7 +149,7 @@
                     callback: async (response) => {
                         if (response.code) {
                             try {
-                                const tokenRes = await fetch('https://blue-bird-eco-technology.onrender.com/api/auth/google', {
+                                const tokenRes = await fetch('https://blue-bird-eco-technology-1.onrender.com/api/auth/google', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -316,7 +316,7 @@
             if (!listEl) return;
 
             try {
-                const res = await fetch(`https://blue-bird-eco-technology.onrender.com/api/reviews?carId=${encodeURIComponent(carId)}`);
+                const res = await fetch(`https://blue-bird-eco-technology-1.onrender.com/api/reviews?carId=${encodeURIComponent(carId)}`);
                 const reviews = await res.json();
 
                 if (reviews.length === 0) {
@@ -387,7 +387,7 @@
             try { user = JSON.parse(userStr); } catch (e) { return; }
 
             try {
-                const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/reviews', {
+                const res = await fetch('https://blue-bird-eco-technology-1.onrender.com/api/reviews', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
