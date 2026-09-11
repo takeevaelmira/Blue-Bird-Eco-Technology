@@ -7,185 +7,120 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
-    <title data-en="Home - Blue Bird Eco Technology" data-ar="الرئيسية - بلو بيرد للتكنولوجيا البيئية">
-        Home - Blue Bird Eco Technology
-    </title>
+    <title data-en="Blue Bird Eco Technology" data-ar="بلو بيرد للتكنولوجيا البيئية">Blue Bird Eco Technology</title>
 </head>
 <body>
 
     <header class="header">
-        <a class="header-logo" href="index.html">
+        <a class="header-logo" href="index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
             <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo">
-            <span class="header-brand">Blue Bird</span>
+            <span class="header-brand" data-en="Blue Bird" data-ar="بلو بيرد">Blue Bird</span>
         </a>
 
-        <nav class="nav">
-            <a
-                class="nav-link"
-                href="index.html"
-                data-en="Home"
-                data-ar="الرئيسية"
-            >
-                Home
-            </a>
-
-            <a
-                class="nav-link"
-                href="cars.html"
-                data-en="Cars"
-                data-ar="السيارات"
-            >
-                Cars
-            </a>
-        </nav>
-
         <div class="header-actions">
-            <button
-                class="btn"
-                id="settingsButton"
-                type="button"
-                data-en="Settings"
-                data-ar="الإعدادات"
-            >
+            <button class="btn" id="settingsButton" type="button" data-en="Settings" data-ar="الإعدادات">
                 Settings
             </button>
-
-            <a
-                class="btn"
-                href="#"
-                data-en="Sign in"
-                data-ar="تسجيل الدخول"
-            >
-                Sign in
-            </a>
+            <div id="authContainer" style="display: inline-block;">
+                <a class="btn" id="signInBtn" href="#" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+            </div>
         </div>
     </header>
 
-    <section class="hero">
-        <main class="hero-content">
-            <div class="hero-images">
-                <img
-                    class="hero-home-image"
-                    src="assets/images/home_img.png"
-                    alt="Eco technology"
-                >
-            </div>
-
-            <p class="hero-subtitle" data-en="Eco Tech LLC" data-ar="إيكو تك ذ.م.م.">
-                Eco Tech LLC
-            </p>
-
-            <a
-                href="cars.html"
-                class="btn btn--shadow"
-                data-en="Go to Cars"
-                data-ar="الانتقال إلى السيارات"
-            >
-                Go to Cars
-            </a>
-        </main>
-    </section>
-
-    <section class="section  section--light">
-        <div class="container">
-            <div class="info">
-                <div class="info-image">
-                    <img src="assets/images/gps.png" style="width: 100%; max-width: 300px; height: auto; display: block;" alt="GPS Image">
-                </div>
-                <div class="info-content">
-                    <h1
-                        class="info-title"
-                        data-en="Cross-Border Tracking"
-                        data-ar="التتبع عبر الحدود"
-                    >
-                        Cross-Border Tracking
-                    </h1>
-
-                    <div class="info-text">
-                        <p
-                            data-en="Real-time visibility of vehicle transit from Korea, through preparation hubs in Dubai Free Zones, to the final customer in KSA."
-                            data-ar="رؤية فورية لحركة المركبات من كوريا، مرورًا بمراكز التجهيز في المناطق الحرة بدبي، وصولًا إلى العميل النهائي في المملكة العربية السعودية."
-                        >
-                            Real-time visibility of vehicle transit from Korea,
-                            through preparation hubs in Dubai Free Zones, to the
-                            final customer in KSA.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <ul class="steps">
-            <li class="steps-item">
-                <div class="steps-num">01</div>
-                <div class="steps-text" data-en="Step 1" data-ar="الخطوة 1">
-                    Step 1
-                </div>
-            </li>
-            <li class="steps-item">
-                <div class="steps-num">02</div>
-                <div class="steps-text" data-en="Step 2" data-ar="الخطوة 2">
-                    Step 2
-                </div>
-            </li>
-            <li class="steps-item">
-                <div class="steps-num">03</div>
-                <div class="steps-text" data-en="Step 3" data-ar="الخطوة 3">
-                    Step 3
-                </div>
-            </li>
-        </ul>
-    </section>
+    <main>
+        <section class="hero">
+            <h1 data-en="Eco-Friendly Future Mobility" data-ar="التنقل المستقبلي الصديق للبيئة">Eco-Friendly Future Mobility</h1>
+            <p data-en="Discover our latest collection of electric and hybrid vehicles." data-ar="اكتشف أحدث تشكيلة من السيارات الكهربائية والهجينة.">Discover our latest collection of electric and hybrid vehicles.</p>
+            <a class="btn" href="cars.html" data-en="View Catalog" data-ar="عرض الكتالوج">View Catalog</a>
+        </section>
+    </main>
 
     <dialog id="settingsDialog">
         <form method="dialog">
-            <h2 data-en="Settings" data-ar="الإعدادات">
-                Settings
-            </h2>
-
-            <label for="languageSelect" data-en="Language" data-ar="اللغة">
-                Language
-            </label>
-
+            <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
+            <label for="languageSelect" data-en="Language" data-ar="اللغة">Language</label>
             <select id="languageSelect" aria-label="Language">
                 <option value="en">English</option>
                 <option value="ar">العربية</option>
             </select>
-
-            <label for="themeSelect" data-en="Theme" data-ar="المظهر">
-                Theme
-            </label>
-
+            <label for="themeSelect" data-en="Theme" data-ar="المظهر">Theme</label>
             <select id="themeSelect" aria-label="Theme">
-                <option
-                    value="light"
-                    data-en="Light"
-                    data-ar="فاتح"
-                >
-                    Light
-                </option>
-                <option
-                    value="dark"
-                    data-en="Dark"
-                    data-ar="داكن"
-                >
-                    Dark
-                </option>
+                <option value="light" data-en="Light" data-ar="فاتح">Light</option>
+                <option value="dark" data-en="Dark" data-ar="داكن">Dark</option>
             </select>
-
             <div>
-                <button
-                    type="submit"
-                    data-en="Close"
-                    data-ar="إغلاق"
-                >
-                    Close
-                </button>
+                <button type="submit" data-en="Close" data-ar="إغلاق">Close</button>
             </div>
         </form>
     </dialog>
 
     <script>
+        fetch('/api/config')
+            .then(res => res.json())
+            .then(config => {
+                const GOOGLE_CLIENT_ID = config.clientId;
+                const authContainer = document.getElementById('authContainer');
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+
+                if (authCode) {
+                    const redirectUri = window.location.origin + window.location.pathname;
+                    fetch('/api/auth/google', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: authCode, redirectUri: redirectUri })
+                    })
+                    .then(res => res.json())
+                    .then(userData => {
+                        if (userData && userData.name) {
+                            localStorage.setItem('google_user', JSON.stringify({
+                                name: userData.name,
+                                picture: userData.picture || '',
+                                email: userData.email || ''
+                            }));
+                        }
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        location.reload();
+                    })
+                    .catch(err => console.error("Google auth error:", err));
+                }
+
+                let currentUser = JSON.parse(localStorage.getItem('google_user') || 'null');
+
+                function updateAuthUI() {
+                    if (currentUser) {
+                        authContainer.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                ${currentUser.picture ? `<img src="${currentUser.picture}" alt="avatar" style="width: 28px; height: 28px; border-radius: 50%;">` : ''}
+                                <span style="font-weight: 600; font-size: 0.95rem;">${currentUser.name}</span>
+                                <button id="signOutBtn" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 0.8rem; text-decoration: underline;">Выйти</button>
+                            </div>
+                        `;
+                        document.getElementById('signOutBtn').addEventListener('click', () => {
+                            localStorage.removeItem('google_user');
+                            currentUser = null;
+                            updateAuthUI();
+                            location.reload();
+                        });
+                    } else {
+                        authContainer.innerHTML = `<a class="btn" id="signInBtn" href="#">Sign in</a>`;
+                        document.getElementById('signInBtn').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (!GOOGLE_CLIENT_ID) {
+                                alert("Google Client ID не настроен на сервере!");
+                                return;
+                            }
+                            const redirectUri = window.location.origin + window.location.pathname;
+                            const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile`;
+                            window.location.href = googleAuthUrl;
+                        });
+                    }
+                }
+                updateAuthUI();
+            })
+            .catch(err => console.error("Failed to load app config:", err));
+
         const settingsButton = document.getElementById("settingsButton");
         const settingsDialog = document.getElementById("settingsDialog");
         const languageSelect = document.getElementById("languageSelect");
@@ -193,59 +128,27 @@
 
         const savedLanguage = localStorage.getItem("language") || "en";
         const savedTheme = localStorage.getItem("theme") || "light";
-
         languageSelect.value = savedLanguage;
         themeSelect.value = savedTheme;
-
         applyLanguage(savedLanguage);
         applyTheme(savedTheme);
 
-        settingsButton.addEventListener("click", () => {
-            settingsDialog.showModal();
+        settingsButton.addEventListener("click", () => settingsDialog.showModal());
+        languageSelect.addEventListener("change", (e) => {
+            localStorage.setItem("language", e.target.value);
+            applyLanguage(e.target.value);
         });
-
-        languageSelect.addEventListener("change", (event) => {
-            const language = event.target.value;
-
-            localStorage.setItem("language", language);
-            applyLanguage(language);
-        });
-
-        themeSelect.addEventListener("change", (event) => {
-            const theme = event.target.value;
-
-            localStorage.setItem("theme", theme);
-            applyTheme(theme);
+        themeSelect.addEventListener("change", (e) => {
+            localStorage.setItem("theme", e.target.value);
+            applyTheme(e.target.value);
         });
 
         function applyLanguage(language) {
             document.documentElement.lang = language;
             document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-
-            document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
-                if (element.tagName === "OPTION") {
-                    element.textContent = element.dataset[language];
-                } else {
-                    element.textContent = element.dataset[language];
-                }
-            });
-
-            document.title = document.querySelector("title").dataset[language];
-
-            languageSelect.setAttribute(
-                "aria-label",
-                language === "ar" ? "اللغة" : "Language"
-            );
-
-            themeSelect.setAttribute(
-                "aria-label",
-                language === "ar" ? "المظهر" : "Theme"
-            );
+            document.querySelectorAll("[data-en][data-ar]").forEach(el => el.textContent = el.dataset[language]);
         }
-
-        function applyTheme(theme) {
-            document.documentElement.dataset.theme = theme;
-        }
+        function applyTheme(theme) { document.documentElement.dataset.theme = theme; }
     </script>
 </body>
 </html>
