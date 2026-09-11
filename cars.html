@@ -10,7 +10,6 @@
     <title data-en="Cars - Blue Bird Eco Technology" data-ar="السيارات - بلو بيرد للتكنولوجيا البيئية">
         Cars - Blue Bird Eco Technology
     </title>
-    <!-- Google Identity Services Library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -169,12 +168,12 @@
             document.documentElement.dataset.theme = theme;
         }
 
-        // --- GOOGLE AUTH LOGIC ---
         let googleClient = null;
 
         async function initGoogleAuth() {
             try {
                 const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/config');
+                if (!res.ok) return;
                 const data = await res.json();
                 if (!data.clientId) return;
 
@@ -251,7 +250,6 @@
             document.getElementById('signInBtn')?.addEventListener('click', triggerGoogleLogin);
         });
 
-        // --- CAR CATALOG LOGIC ---
         let currentOffset = 0;
         const limitPerPage = 11;
 
@@ -285,7 +283,6 @@
                     "query": searchQuery,
                     "filters": {
                         "saleOnly": true,
-                        "fuelType": "Hybrid", 
                         "yearMin": selectedYear ? parseInt(selectedYear, 10) : 2022,
                         ...(selectedYear ? { "yearMax": parseInt(selectedYear, 10) } : {}),
                         ...(selectedBrand ? { "brand": selectedBrand } : {}),
