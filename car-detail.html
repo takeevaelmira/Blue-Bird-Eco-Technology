@@ -10,6 +10,8 @@
     <title data-en="Car Details - Blue Bird Eco Technology" data-ar="تفاصيل السيارة - بلو بيرد للتكنولوجيا البيئية">
         Car Details - Blue Bird Eco Technology
     </title>
+    <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         .detail-container { max-width: 1000px; margin: 3rem auto; padding: 0 2rem; }
         .gallery { display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-bottom: 2rem; }
@@ -24,6 +26,14 @@
         .spec-value { font-weight: 600; font-size: 1.05rem; }
         .price-box { font-size: 1.5rem; font-weight: 700; color: #2e7d32; margin-bottom: 0.5rem; }
         .delivery-box { font-size: 1.1rem; color: #555; margin-bottom: 0; }
+        
+        /* Стиль отзывов */
+        .review-card { background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+        .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem; }
+        .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .star-rating { color: #ffc107; font-size: 1.2rem; }
+        .star-picker { display: flex; gap: 5px; font-size: 1.5rem; cursor: pointer; color: #ccc; margin-bottom: 10px; }
+        .star-picker span.active { color: #ffc107; }
     </style>
 </head>
 <body>
@@ -38,11 +48,13 @@
             <span class="header-brand" style="font-size: 1rem;">Blue Bird</span>
         </div>
 
-        <div class="header-actions">
+        <div class="header-actions" id="headerActions">
             <button class="btn" id="settingsButton" type="button" data-en="Settings" data-ar="الإعدادات">
                 Settings
             </button>
-            <a class="btn" href="#" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+            <div id="authContainer">
+                <button class="btn" id="signInBtn" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+            </div>
         </div>
     </header>
 
@@ -55,19 +67,16 @@
     <dialog id="settingsDialog">
         <form method="dialog">
             <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
-
             <label for="languageSelect" data-en="Language" data-ar="اللغة">Language</label>
             <select id="languageSelect" aria-label="Language">
                 <option value="en">English</option>
                 <option value="ar">العربية</option>
             </select>
-
             <label for="themeSelect" data-en="Theme" data-ar="المظهر">Theme</label>
             <select id="themeSelect" aria-label="Theme">
                 <option value="light" data-en="Light" data-ar="فاتح">Light</option>
                 <option value="dark" data-en="Dark" data-ar="داكن">Dark</option>
             </select>
-
             <div>
                 <button type="submit" data-en="Close" data-ar="إغلاق">Close</button>
             </div>
@@ -126,13 +135,101 @@
             document.documentElement.dataset.theme = theme;
         }
 
+        // --- GOOGLE AUTH LOGIC ---
+        let googleClient = null;
+
+        async function initGoogleAuth() {
+            try {
+                const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/config');
+                const data = await res.json();
+                if (!data.clientId) return;
+
+                googleClient = google.accounts.oauth2.initCodeClient({
+                    client_id: data.clientId,
+                    scope: 'openid profile email',
+                    ux_mode: 'popup',
+                    callback: async (response) => {
+                        if (response.code) {
+                            try {
+                                const tokenRes = await fetch('https://blue-bird-eco-technology.onrender.com/api/auth/google', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        code: response.code,
+                                        redirectUri: window.location.origin + window.location.pathname
+                                    })
+                                });
+                                const userData = await tokenRes.json();
+                                if (userData && userData.name) {
+                                    localStorage.setItem('googleUser', JSON.stringify(userData));
+                                    updateAuthUI(userData);
+                                    loadReviews(currentCarId); // Перезагрузка отзывов для обновления интерфейса отправки
+                                }
+                            } catch (err) {
+                                console.error('Auth exchange error:', err);
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to init google auth config:', e);
+            }
+        }
+
+        function updateAuthUI(user) {
+            const authContainer = document.getElementById('authContainer');
+            if (!authContainer) return;
+
+            if (user && user.name) {
+                authContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        ${user.picture ? `<img src="${user.picture}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                        <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-color);">${user.name}</span>
+                        <button class="btn" onclick="signOut()" style="padding: 6px 12px; font-size: 0.85rem;" data-en="Sign out" data-ar="خروج">Sign out</button>
+                    </div>
+                `;
+            } else {
+                authContainer.innerHTML = `
+                    <button class="btn" id="signInBtn" onclick="triggerGoogleLogin()" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+                `;
+                applyLanguage(localStorage.getItem("language") || "en");
+            }
+        }
+
+        function triggerGoogleLogin() {
+            if (googleClient) {
+                googleClient.requestCode();
+            } else {
+                alert('Google Client ID is not configured properly.');
+            }
+        }
+
+        function signOut() {
+            localStorage.removeItem('googleUser');
+            updateAuthUI(null);
+            loadReviews(currentCarId);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initGoogleAuth();
+            const savedUser = localStorage.getItem('googleUser');
+            if (savedUser) {
+                try { updateAuthUI(JSON.parse(savedUser)); } catch (e) { signOut(); }
+            }
+            document.getElementById('signInBtn')?.addEventListener('click', triggerGoogleLogin);
+        });
+
+        // --- CAR DETAILS & REVIEWS LOGIC ---
         const carDataStr = localStorage.getItem('selectedCar');
         const contentContainer = document.getElementById('carDetailsContent');
+        let currentCarId = null;
+        let selectedRating = 5;
 
         if (!carDataStr) {
             contentContainer.innerHTML = '<h2>Car not found</h2><p><a href="cars.html">← Back to catalog</a></p>';
         } else {
             const car = JSON.parse(carDataStr);
+            currentCarId = car.id || car.vin || car.title || 'default_car';
 
             let title = car.title;
             if (!title && car.vehicleIdentity) {
@@ -163,7 +260,6 @@
             }
 
             const description = car.description || car.memo || 'No detailed description provided for this vehicle.';
-
             const brand = car.vehicleIdentity?.brand || 'N/A';
             const model = car.vehicleIdentity?.model || 'N/A';
             const year = car.year || (car.title?.match(/20\d{2}/) ? car.title.match(/20\d{2}/)[0] : '2022+');
@@ -200,13 +296,127 @@
                     <h3>Description</h3>
                     <p style="margin-top: 0.8rem; line-height: 1.6; color: var(--text-color);">${description}</p>
                 </div>
+
+                <div class="info-card">
+                    <h3>Customer Reviews</h3>
+                    <div id="reviewsList" style="margin-top: 1rem; margin-bottom: 1.5rem;">Loading reviews...</div>
+                    <div id="reviewFormContainer"></div>
+                </div>
             `;
+
+            loadReviews(currentCarId);
         }
 
         function changeMainImage(src, element) {
             document.getElementById('mainGalleryImage').src = src;
             document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        async function loadReviews(carId) {
+            const listEl = document.getElementById('reviewsList');
+            const formEl = document.getElementById('reviewFormContainer');
+            if (!listEl) return;
+
+            try {
+                const res = await fetch(`https://blue-bird-eco-technology.onrender.com/api/reviews?carId=${encodeURIComponent(carId)}`);
+                const reviews = await res.json();
+
+                if (reviews.length === 0) {
+                    listEl.innerHTML = '<p style="color: #666;">No reviews yet. Be the first to leave a review!</p>';
+                } else {
+                    listEl.innerHTML = reviews.map(rev => `
+                        <div class="review-card">
+                            <div class="review-header">
+                                ${rev.userAvatar ? `<img src="${rev.userAvatar}" class="review-avatar" alt="Avatar">` : '<div style="width:40px;height:40px;background:#ccc;border-radius:50%;"></div>'}
+                                <div>
+                                    <div style="font-weight: 600;">${rev.username}</div>
+                                    <div style="font-size: 0.8rem; color: #666;">${rev.date}</div>
+                                </div>
+                            </div>
+                            <div class="star-rating">${'★'.repeat(rev.rating)}${'☆'.repeat(5 - rev.rating)}</div>
+                            <p style="margin-top: 0.5rem; color: var(--text-color);">${escapeHtml(rev.comment)}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Проверка авторизации для отображения формы отправки отзыва
+                const userStr = localStorage.getItem('googleUser');
+                if (userStr) {
+                    formEl.innerHTML = `
+                        <h4 style="margin-bottom: 0.5rem;">Leave your review</h4>
+                        <div class="star-picker" id="starPicker">
+                            <span onclick="setRating(1)" class="active">★</span>
+                            <span onclick="setRating(2)" class="active">★</span>
+                            <span onclick="setRating(3)" class="active">★</span>
+                            <span onclick="setRating(4)" class="active">★</span>
+                            <span onclick="setRating(5)" class="active">★</span>
+                        </div>
+                        <textarea id="commentText" placeholder="Write your review here..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--page-background); color: var(--text-color); margin-bottom: 10px; min-height: 80px;"></textarea>
+                        <button class="btn" onclick="submitReview('${carId}')">Submit Review</button>
+                    `;
+                    selectedRating = 5;
+                } else {
+                    formEl.innerHTML = `<p style="font-style: italic; color: #666; margin-top: 1rem;">Please <a href="#" onclick="triggerGoogleLogin(); return false;">sign in with Google</a> to leave a review.</p>`;
+                }
+
+            } catch (e) {
+                listEl.innerHTML = '<p style="color: red;">Failed to load reviews.</p>';
+            }
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('#starPicker span');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                    star.textContent = '★';
+                } else {
+                    star.classList.remove('active');
+                    star.textContent = '☆';
+                }
+            });
+        }
+
+        async function submitReview(carId) {
+            const commentText = document.getElementById('commentText').value.trim();
+            const userStr = localStorage.getItem('googleUser');
+            if (!userStr) {
+                alert('You must be signed in.');
+                return;
+            }
+
+            let user;
+            try { user = JSON.parse(userStr); } catch (e) { return; }
+
+            try {
+                const res = await fetch('https://blue-bird-eco-technology.onrender.com/api/reviews', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        carId: carId,
+                        rating: selectedRating,
+                        comment: commentText,
+                        user: user
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('commentText').value = '';
+                    loadReviews(carId);
+                } else {
+                    alert(data.error || 'Failed to submit review.');
+                }
+            } catch (e) {
+                alert('Network error while submitting review.');
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
     </script>
 </body>
