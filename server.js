@@ -36,7 +36,6 @@ const server = http.createServer((req, res) => {
             const requestedYearMax = clientData.filters && clientData.filters.yearMax ? clientData.filters.yearMax : null;
             const requestedBrand = clientData.filters && clientData.filters.brand ? clientData.filters.brand.toLowerCase() : null;
             const requestedMileageMax = clientData.filters && clientData.filters.mileageMax ? clientData.filters.mileageMax : null;
-            const requestedBaseFuel = clientData.filters && clientData.filters.baseFuel ? clientData.filters.baseFuel.toLowerCase() : null;
 
             const requestPayload = {
                 providerId: clientData.providerId || 2,
@@ -78,34 +77,8 @@ const server = http.createServer((req, res) => {
                     try {
                         const parsed = JSON.parse(responseData);
                         let items = parsed.items || parsed.listings || parsed.result || (Array.isArray(parsed) ? parsed : []);
-                        
-                        // 1. Гибкая фильтрация по типу топлива (baseFuel / fuelName)
-                        if (requestedBaseFuel) {
-                            // Смягченная фильтрация: проверяем поле топлива ИЛИ название машины
-items = items.filter(car => {
-    const fuelName = (
-        (car.pricing && car.pricing.baseFuel) ||
-        (car.spec && car.spec.fuelName) || 
-        (car.specs && car.specs.fuelName) || 
-        ''
-    ).toLowerCase();
 
-    const titleStr = (car.title || '').toLowerCase();
-
-    const isHybridFuel = fuelName.includes('hybrid') || 
-                           fuelName.includes('hev') || 
-                           fuelName.includes('phev') || 
-                           fuelName.includes('гибрид');
-
-    const isHybridInTitle = titleStr.includes('hybrid') || 
-                            titleStr.includes('гибрид');
-
-    // Машина проходит, если тип топлива совпал OR слово есть в названии
-    return isHybridFuel || isHybridInTitle;
-});
-                        }
-
-                        // 2. Фильтрация по году
+                        // 1. Фильтрация по году (сохранена)
                         items = items.filter(car => {
                             const titleStr = (car.title || '').toLowerCase();
                             const genStr = car.vehicleIdentity && car.vehicleIdentity.generation ? String(car.vehicleIdentity.generation) : '';
@@ -126,7 +99,7 @@ items = items.filter(car => {
                             return year >= requestedYearMin;
                         });
 
-                        // 3. Фильтрация по бренду
+                        // 2. Фильтрация по бренду
                         if (requestedBrand) {
                             items = items.filter(car => {
                                 const brandStr = car.vehicleIdentity && car.vehicleIdentity.brand ? car.vehicleIdentity.brand.toLowerCase() : '';
@@ -135,7 +108,7 @@ items = items.filter(car => {
                             });
                         }
 
-                        // 4. Фильтрация по пробегу
+                        // 3. Фильтрация по пробегу
                         if (requestedMileageMax) {
                             items = items.filter(car => {
                                 let mileage = null;
@@ -158,7 +131,7 @@ items = items.filter(car => {
                             });
                         }
 
-                        // 5. Фильтрация по поисковому запросу
+                        // 4. Фильтрация по поисковому запросу
                         if (clientData.query && clientData.query.trim() !== '') {
                             const q = clientData.query.trim().toLowerCase();
                             items = items.filter(car => {
