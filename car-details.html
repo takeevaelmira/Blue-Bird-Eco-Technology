@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <link rel="stylesheet" href="assets/css/cars.css">
+    <link rel="stylesheet" href="assets/css/car-details.css">
+    <title data-en="Car details - Blue Bird Eco Technology" data-ar="تفاصيل السيارة - بلو بيرد للتكنولوجيا البيئية">
+        Car details - Blue Bird Eco Technology
+    </title>
+</head>
+<body>
+    <header class="header">
+        <a class="header-logo" href="index.html">
+            <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo">
+            <span class="header-brand">Blue Bird</span>
+        </a>
+
+        <nav class="nav" aria-label="Main navigation">
+            <a class="nav-link" href="index.html">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+                </svg>
+                <span data-en="Home" data-ar="الرئيسية">Home</span>
+            </a>
+            <a class="nav-link" href="cars.html" aria-current="page">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m5 11 1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
+                    <path d="M3 11h18v8H3zM6 19v2m12-2v2M6 15h.01M18 15h.01" />
+                </svg>
+                <span data-en="Cars" data-ar="السيارات">Cars</span>
+            </a>
+            <a class="nav-link mobile-account-button" href="account.html" data-account-button aria-label="Account">
+                <svg class="nav-icon mobile-account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                </svg>
+                <img class="account-avatar" alt="" hidden>
+                <span class="account-avatar-fallback" aria-hidden="true" hidden></span>
+                <span class="account-name" data-en="Account" data-ar="الحساب">Account</span>
+            </a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="btn" id="settingsButton" type="button" data-en="Settings" data-ar="الإعدادات">Settings</button>
+            <a class="btn account-button" href="account.html" data-account-button>
+                <img class="account-avatar" alt="" hidden>
+                <span class="account-avatar-fallback" aria-hidden="true" hidden></span>
+                <span class="account-name" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="vehicle-page">
+        <a class="vehicle-back" href="cars.html" data-en="Back to cars" data-ar="العودة إلى السيارات">Back to cars</a>
+        <p id="detailStatus" class="cars-status" role="status" aria-live="polite" data-en="Loading vehicle details..." data-ar="جارٍ تحميل تفاصيل السيارة...">
+            Loading vehicle details...
+        </p>
+
+        <article id="vehicleContent" hidden>
+            <section class="vehicle-gallery-section" aria-label="Vehicle photos">
+                <button id="mainPhotoButton" class="vehicle-main-photo-button" type="button" aria-label="Open main photo">
+                    <img id="mainVehiclePhoto" class="vehicle-main-photo" alt="">
+                </button>
+                <div id="photoGallery" class="vehicle-gallery"></div>
+            </section>
+
+            <section class="vehicle-heading">
+                <div>
+                    <h1 id="vehicleTitle"></h1>
+                    <p id="vehicleYear" class="vehicle-eyebrow"></p>
+                    <p id="vehicleSubtitle" class="vehicle-subtitle"></p>
+                    <button id="vehicleFavoriteButton" class="favorite-button vehicle-favorite-button" type="button" data-favorite-button aria-pressed="false">☆</button>
+                </div>
+                <div class="vehicle-price-panel">
+                    <p id="vehiclePrice" class="vehicle-price"></p>
+                    <div class="vehicle-currency-controls">
+                        <label for="currencySelect" data-en="Display currency" data-ar="العملة">Display currency</label>
+                        <select id="currencySelect" class="cars-currency-select" aria-label="Display currency">
+                            <option value="sar" data-en="Saudi riyal (SAR)" data-ar="ريال سعودي (SAR)">Saudi riyal (SAR)</option>
+                            <option value="krw" data-en="Korean won (KRW)" data-ar="وون كوري (KRW)">Korean won (KRW)</option>
+                        </select>
+                    </div>
+                    <p id="currencyRate" class="cars-currency-rate" aria-live="polite"></p>
+                </div>
+            </section>
+
+            <section class="vehicle-section" aria-labelledby="specsTitle">
+                <h2 id="specsTitle" data-en="Specifications" data-ar="المواصفات">Specifications</h2>
+                <dl id="vehicleSpecs" class="vehicle-specs"></dl>
+            </section>
+
+            <a id="encarLink" class="vehicle-source" target="_blank" rel="noopener noreferrer"
+                data-en="Open original Encar listing" data-ar="فتح الإعلان الأصلي في إنكار">
+                Open original Encar listing
+            </a>
+        </article>
+    </main>
+
+    <dialog id="photoDialog" class="photo-dialog">
+        <form method="dialog">
+            <button class="photo-dialog-close" type="submit" aria-label="Close photo">×</button>
+        </form>
+        <img id="expandedPhoto" alt="">
+    </dialog>
+
+    <dialog id="settingsDialog">
+        <form method="dialog">
+            <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
+            <label for="languageSelect" data-en="Language" data-ar="اللغة">Language</label>
+            <select id="languageSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+            <label for="themeSelect" data-en="Theme" data-ar="المظهر">Theme</label>
+            <select id="themeSelect" aria-label="Theme">
+                <option value="light" data-en="Light" data-ar="فاتح">Light</option>
+                <option value="dark" data-en="Dark" data-ar="داكن">Dark</option>
+            </select>
+            <div>
+                <button type="submit" data-en="Close" data-ar="إغلاق">Close</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const settingsButton = document.getElementById("settingsButton");
+        const settingsDialog = document.getElementById("settingsDialog");
+        const languageSelect = document.getElementById("languageSelect");
+        const themeSelect = document.getElementById("themeSelect");
+        const currencySelect = document.getElementById("currencySelect");
+        const detailStatus = document.getElementById("detailStatus");
+        const vehicleContent = document.getElementById("vehicleContent");
+        const vehicleTitle = document.getElementById("vehicleTitle");
+        const vehiclePrice = document.getElementById("vehiclePrice");
+        const currencyRate = document.getElementById("currencyRate");
+        const photoGallery = document.getElementById("photoGallery");
+        const mainPhotoButton = document.getElementById("mainPhotoButton");
+        const mainVehiclePhoto = document.getElementById("mainVehiclePhoto");
+        const vehicleSpecs = document.getElementById("vehicleSpecs");
+        const vehicleFavoriteButton = document.getElementById("vehicleFavoriteButton");
+        const expandedPhoto = document.getElementById("expandedPhoto");
+        const photoDialog = document.getElementById("photoDialog");
+        const vehicleId = new URLSearchParams(window.location.search).get("id");
+        const savedLanguage = localStorage.getItem("language") || "en";
+        const savedTheme = localStorage.getItem("theme") || "light";
+        const savedCurrency = localStorage.getItem("currency") || "sar";
+        let vehicleData = null;
+        let sarPerKrw = null;
+        let exchangeRateDate = "";
+        const translatedVehicleValues = new Map();
+
+        languageSelect.value = savedLanguage;
+        themeSelect.value = savedTheme;
+        currencySelect.value = savedCurrency;
+        applyLanguage(savedLanguage);
+        applyTheme(savedTheme);
+
+        settingsButton.addEventListener("click", () => settingsDialog.showModal());
+        languageSelect.addEventListener("change", (event) => {
+            localStorage.setItem("language", event.target.value);
+            applyLanguage(event.target.value);
+            renderVehicle();
+        });
+        themeSelect.addEventListener("change", (event) => {
+            localStorage.setItem("theme", event.target.value);
+            applyTheme(event.target.value);
+        });
+        currencySelect.addEventListener("change", (event) => {
+            localStorage.setItem("currency", event.target.value);
+            renderPrice();
+        });
+        mainPhotoButton.addEventListener("click", () => openPhoto(mainVehiclePhoto.src, mainVehiclePhoto.alt));
+
+        function getLocalizedText(english, arabic) {
+            return languageSelect.value === "ar" ? arabic : english;
+        }
+
+        function applyLanguage(language) {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+            document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
+                element.textContent = element.dataset[language];
+            });
+            document.title = document.querySelector("title").dataset[language];
+            languageSelect.setAttribute("aria-label", language === "ar" ? "اللغة" : "Language");
+            themeSelect.setAttribute("aria-label", language === "ar" ? "المظهر" : "Theme");
+            currencySelect.setAttribute("aria-label", language === "ar" ? "العملة" : "Display currency");
+            document.querySelector(".photo-dialog-close").setAttribute("aria-label", language === "ar" ? "إغلاق الصورة" : "Close photo");
+            renderExchangeRate();
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+        }
+
+        async function loadExchangeRate() {
+            try {
+                const response = await fetch("https://open.er-api.com/v6/latest/KRW");
+                if (!response.ok) throw new Error("Exchange rate unavailable");
+                const data = await response.json();
+                sarPerKrw = Number(data.rates?.SAR);
+                if (!Number.isFinite(sarPerKrw)) throw new Error("SAR rate missing");
+                exchangeRateDate = data.time_last_update_utc.slice(5, 16);
+                renderExchangeRate();
+                renderPrice();
+            } catch (error) {
+                currencyRate.textContent = getLocalizedText(
+                    "Live exchange rate unavailable; prices shown in KRW.",
+                    "سعر الصرف غير متاح؛ الأسعار معروضة بالوون الكوري."
+                );
+                if (currencySelect.value === "sar") currencySelect.value = "krw";
+                renderPrice();
+            }
+        }
+
+        function renderExchangeRate() {
+            if (Number.isFinite(sarPerKrw)) {
+                currencyRate.textContent = getLocalizedText(
+                    `1 KRW = ${sarPerKrw.toFixed(6)} SAR · Updated ${exchangeRateDate}`,
+                    `١ وون = ${sarPerKrw.toFixed(6)} ريال · تحديث ${exchangeRateDate}`
+                );
+            }
+        }
+
+        function renderPrice() {
+            if (!vehicleData) return;
+            const priceInWon = Number(vehicleData.advertisement?.price) * 10000;
+            const useRiyal = currencySelect.value === "sar" && Number.isFinite(sarPerKrw);
+            const amount = useRiyal ? priceInWon * sarPerKrw : priceInWon;
+            const currency = useRiyal ? "SAR" : "KRW";
+            vehiclePrice.textContent = Number.isFinite(amount) && amount > 0
+                ? new Intl.NumberFormat(languageSelect.value === "ar" ? "ar-SA" : "en-SA", {
+                    style: "currency",
+                    currency,
+                    maximumFractionDigits: 0
+                }).format(amount)
+                : getLocalizedText("Price unavailable", "السعر غير متاح");
+        }
+
+        function getVehicleName() {
+            const category = vehicleData.category || {};
+            if (languageSelect.value === "en") {
+                return [
+                    category.manufacturerEnglishName,
+                    category.modelGroupEnglishName || category.modelName,
+                    category.gradeEnglishName || category.gradeName,
+                    category.gradeDetailEnglishName
+                ].filter(Boolean).join(" ");
+            }
+            return [category.manufacturerName, category.modelName, category.gradeName, category.gradeDetailName]
+                .filter(Boolean)
+                .join(" ");
+        }
+
+        async function translateVehicleName(name) {
+            const parameters = new URLSearchParams({ client: "gtx", sl: "ko", tl: "ar", dt: "t", q: name });
+            try {
+                const response = await fetch(`https://translate.googleapis.com/translate_a/single?${parameters}`);
+                if (!response.ok) return name;
+                const data = await response.json();
+                return (data[0] || []).map((group) => typeof group[0] === "string" ? group[0] : "").join("").trim() || name;
+            } catch (error) {
+                return name;
+            }
+        }
+
+        async function translateVehicleValue(value, language) {
+            const text = String(value || "").trim();
+            if (!text) return "";
+            const cacheKey = `${language}:${text}`;
+            if (translatedVehicleValues.has(cacheKey)) return translatedVehicleValues.get(cacheKey);
+
+            const parameters = new URLSearchParams({ client: "gtx", sl: "auto", tl: language, dt: "t", q: text });
+            try {
+                const response = await fetch(`https://translate.googleapis.com/translate_a/single?${parameters}`);
+                if (!response.ok) return text;
+                const data = await response.json();
+                const translation = (data[0] || [])
+                    .map((group) => typeof group[0] === "string" ? group[0] : "")
+                    .join("")
+                    .trim() || text;
+                translatedVehicleValues.set(cacheKey, translation);
+                return translation;
+            } catch (error) {
+                return text;
+            }
+        }
+
+        function addSpecification(label, value) {
+            if (value === undefined || value === null || value === "") return;
+            const term = document.createElement("dt");
+            term.textContent = label;
+            const description = document.createElement("dd");
+            description.textContent = value;
+            vehicleSpecs.append(term, description);
+        }
+
+        function openPhoto(source, alt) {
+            if (!source) return;
+            expandedPhoto.src = source;
+            expandedPhoto.alt = alt;
+            photoDialog.showModal();
+        }
+
+        function setMainPhoto(source, alt) {
+            mainVehiclePhoto.src = source;
+            mainVehiclePhoto.alt = alt;
+            photoGallery.querySelectorAll(".vehicle-photo-button").forEach((button) => {
+                const isSelected = button.dataset.photoSource === source;
+                button.classList.toggle("is-selected", isSelected);
+                button.setAttribute("aria-pressed", String(isSelected));
+            });
+        }
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat(languageSelect.value === "ar" ? "ar-SA" : "en-US").format(value);
+        }
+
+        async function renderVehicle() {
+            if (!vehicleData) return;
+            const category = vehicleData.category || {};
+            const spec = vehicleData.spec || {};
+            const language = languageSelect.value;
+            const koreanName = [category.manufacturerName, category.modelName, category.gradeName, category.gradeDetailName]
+                .filter(Boolean)
+                .join(" ");
+
+            const [title, fuelName, transmissionName, colorName, bodyName] = await Promise.all([
+                language === "ar" ? translateVehicleName(koreanName) : getVehicleName(),
+                translateVehicleValue(spec.fuelName, language),
+                translateVehicleValue(spec.transmissionName, language),
+                translateVehicleValue(spec.colorName, language),
+                translateVehicleValue(spec.bodyName, language)
+            ]);
+            if (language !== languageSelect.value) return;
+            vehicleTitle.textContent = title || koreanName;
+            vehicleFavoriteButton.dataset.carId = vehicleId;
+            vehicleFavoriteButton.dataset.title = vehicleTitle.textContent;
+            vehicleFavoriteButton.dataset.year = String(category.formYear || "");
+            vehicleFavoriteButton.dataset.price = String(vehicleData.advertisement?.price || "");
+            document.getElementById("vehicleYear").textContent = getLocalizedText(
+                `MODEL YEAR ${category.formYear || ""}`,
+                `سنة الموديل ${category.formYear || ""}`
+            );
+            document.getElementById("vehicleSubtitle").textContent = [bodyName, fuelName]
+                .filter(Boolean)
+                .join(" · ");
+            document.getElementById("encarLink").href = `https://fem.encar.com/cars/detail/${encodeURIComponent(vehicleId)}`;
+
+            photoGallery.replaceChildren();
+            const photos = Array.isArray(vehicleData.photos) ? vehicleData.photos.filter((photo) => photo.path) : [];
+            const mainPhoto = photos.find((photo) => photo.code === "001")
+                || photos.find((photo) => photo.type === "OUTER")
+                || photos[0];
+            vehicleFavoriteButton.dataset.image = mainPhoto ? `https://ci.encar.com${mainPhoto.path}` : "";
+            document.dispatchEvent(new Event("bluebird-favorites-refresh"));
+            mainPhotoButton.hidden = !mainPhoto;
+            if (mainPhoto) {
+                mainVehiclePhoto.src = `https://ci.encar.com${mainPhoto.path}`;
+                mainVehiclePhoto.alt = `${vehicleTitle.textContent} - ${photos.indexOf(mainPhoto) + 1}`;
+            } else {
+                mainVehiclePhoto.removeAttribute("src");
+                mainVehiclePhoto.alt = getLocalizedText("No photos available", "لا توجد صور متاحة");
+            }
+
+            photos.forEach((photo, index) => {
+                const photoNumber = index + 1;
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "vehicle-photo-button";
+                button.dataset.photoSource = `https://ci.encar.com${photo.path}`;
+                button.setAttribute("aria-label", getLocalizedText(`Show photo ${photoNumber}`, `اعرض الصورة ${photoNumber}`));
+                button.setAttribute("aria-pressed", String(photo === mainPhoto));
+                const image = document.createElement("img");
+                image.src = button.dataset.photoSource;
+                image.alt = `${vehicleTitle.textContent} - ${photoNumber}`;
+                image.loading = "lazy";
+                button.addEventListener("click", () => setMainPhoto(image.src, image.alt));
+                button.append(image);
+                photoGallery.append(button);
+            });
+            if (mainPhoto) setMainPhoto(mainVehiclePhoto.src, mainVehiclePhoto.alt);
+
+            vehicleSpecs.replaceChildren();
+            addSpecification(getLocalizedText("Model year", "سنة الموديل"), category.formYear);
+            addSpecification(getLocalizedText("Mileage", "المسافة المقطوعة"), spec.mileage === undefined ? "" : `${formatNumber(spec.mileage)} ${getLocalizedText("km", "كم")}`);
+            addSpecification(getLocalizedText("Fuel", "نوع الوقود"), fuelName);
+            addSpecification(getLocalizedText("Transmission", "ناقل الحركة"), transmissionName);
+            addSpecification(getLocalizedText("Engine", "سعة المحرك"), spec.displacement ? `${formatNumber(spec.displacement)} cc` : "");
+            addSpecification(getLocalizedText("Body style", "نوع الهيكل"), bodyName);
+            addSpecification(getLocalizedText("Seats", "عدد المقاعد"), spec.seatCount);
+            addSpecification(getLocalizedText("Color", "اللون"), colorName);
+            renderPrice();
+        }
+
+        async function loadVehicle() {
+            if (!/^\d+$/.test(vehicleId || "")) {
+                detailStatus.textContent = getLocalizedText("Invalid vehicle listing.", "إعلان السيارة غير صالح.");
+                return;
+            }
+            try {
+                const response = await fetch(`https://api.encar.com/v1/readside/vehicle/${encodeURIComponent(vehicleId)}`);
+                if (!response.ok) throw new Error("Vehicle listing unavailable");
+                vehicleData = await response.json();
+                await renderVehicle();
+                vehicleContent.hidden = false;
+                detailStatus.hidden = true;
+            } catch (error) {
+                detailStatus.textContent = getLocalizedText(
+                    "Could not load this vehicle. It may no longer be listed.",
+                    "تعذر تحميل السيارة. ربما لم يعد الإعلان متاحًا."
+                );
+            }
+        }
+
+        loadExchangeRate();
+        loadVehicle();
+    </script>
+    <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

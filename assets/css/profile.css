@@ -1,0 +1,239 @@
+.account-page {
+    width: min(76rem, calc(100% - 4rem));
+    min-height: calc(100vh - 11rem);
+    margin: 3.2rem auto 6rem;
+}
+
+.account-heading {
+    margin: 0 0 2.4rem;
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+
+.account-panel {
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--page-background);
+}
+
+.profile-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 1.8rem;
+    padding: 2.4rem;
+    background: var(--section-color);
+}
+
+.profile-identity-copy {
+    min-width: 0;
+}
+
+.profile-identity h2 {
+    margin: 0 0 0.4rem;
+    font-size: 2rem;
+    overflow-wrap: anywhere;
+}
+
+.profile-identity p,
+.profile-favorites-section > p {
+    margin: 0;
+    color: var(--muted-text-color);
+    overflow-wrap: anywhere;
+}
+
+.profile-avatar,
+.profile-avatar-fallback {
+    width: 7.2rem;
+    height: 7.2rem;
+    flex: 0 0 7.2rem;
+    border-radius: 50%;
+}
+
+.profile-avatar {
+    object-fit: cover;
+}
+
+.profile-avatar-fallback {
+    display: grid;
+    place-items: center;
+    background: #37796b;
+    color: #fff;
+    font-size: 2.8rem;
+    font-weight: 700;
+}
+
+.profile-avatar-fallback[hidden] {
+    display: none;
+}
+
+.profile-favorites-section {
+    padding: 2.4rem;
+}
+
+.profile-favorites-section h3 {
+    margin: 0 0 1.2rem;
+    font-size: 1.8rem;
+}
+
+.profile-favorites {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+.profile-favorite-item {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.profile-favorite-item > img {
+    width: 10rem;
+    height: 7rem;
+    flex: 0 0 10rem;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.profile-favorite-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.profile-favorite-info a {
+    color: var(--text-color);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.profile-favorite-info a:hover {
+    text-decoration: underline;
+}
+
+.profile-favorite-info p {
+    margin: 0.4rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.3rem;
+}
+
+.favorite-remove-btn {
+    width: 3.8rem;
+    height: 3.8rem;
+    flex: 0 0 3.8rem;
+    border: 0;
+    border-radius: 5px;
+    background: var(--section-color);
+    color: #b42318;
+    cursor: pointer;
+    font: inherit;
+    font-size: 2rem;
+}
+
+.account-guest {
+    display: grid;
+    justify-items: center;
+    gap: 1.2rem;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.account-guest[hidden] {
+    display: none;
+}
+
+.account-guest h2,
+.account-guest p {
+    margin: 0;
+}
+
+.account-guest p {
+    color: var(--muted-text-color);
+}
+
+.account-login-link,
+.profile-signout {
+    display: inline-flex;
+    min-height: 4.6rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.8rem;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.account-login-link {
+    background: #26735f;
+    color: #fff;
+}
+
+.profile-signout {
+    width: calc(100% - 4.8rem);
+    margin: 0 2.4rem 2.4rem;
+    background: #fff1f0;
+    color: #a22a22;
+}
+
+.account-page a:focus-visible,
+.account-page button:focus-visible {
+    outline: 3px solid #26735f;
+    outline-offset: 3px;
+}
+
+.profile-signout {
+    font-size: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .account-page {
+        width: min(100% - 3rem, 76rem);
+        min-height: calc(100vh - 14rem);
+        margin: 2rem auto 3rem;
+    }
+
+    .account-heading {
+        margin-bottom: 1.6rem;
+        font-size: 2.4rem;
+    }
+
+    .profile-identity,
+    .profile-favorites-section {
+        padding: 1.8rem;
+    }
+
+    .profile-avatar,
+    .profile-avatar-fallback {
+        width: 6rem;
+        height: 6rem;
+        flex-basis: 6rem;
+    }
+
+    .profile-favorite-item > img {
+        width: 7rem;
+        height: 5.5rem;
+        flex-basis: 7rem;
+    }
+
+    .profile-signout {
+        width: calc(100% - 3.6rem);
+        margin: 0 1.8rem 1.8rem;
+    }
+}
+
+.account-loading {
+    margin: 0;
+    color: var(--muted-text-color);
+}
+
+.account-loading[hidden] {
+    display: none;
+}

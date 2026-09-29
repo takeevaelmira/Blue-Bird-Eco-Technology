@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <title data-en="Home - Blue Bird Eco Technology" data-ar="الرئيسية - بلو بيرد للتكنولوجيا البيئية">
+        Home - Blue Bird Eco Technology
+    </title>
+</head>
+<body>
+
+    <header class="header">
+        <a class="header-logo" href="index.html">
+            <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo">
+            <span class="header-brand">Blue Bird</span>
+        </a>
+
+        <nav class="nav">
+            <a
+                class="nav-link"
+                href="index.html"
+                aria-current="page"
+            >
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+                </svg>
+                <span data-en="Home" data-ar="الرئيسية">Home</span>
+            </a>
+
+            <a
+                class="nav-link"
+                href="cars.html"
+            >
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m5 11 1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
+                    <path d="M3 11h18v8H3zM6 19v2m12-2v2M6 15h.01M18 15h.01" />
+                </svg>
+                <span data-en="Cars" data-ar="السيارات">Cars</span>
+            </a>
+            <a class="nav-link mobile-account-button" href="account.html" data-account-button aria-label="Account">
+                <svg class="nav-icon mobile-account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                </svg>
+                <img class="account-avatar" alt="" hidden>
+                <span class="account-avatar-fallback" aria-hidden="true" hidden></span>
+                <span class="account-name" data-en="Account" data-ar="الحساب">Account</span>
+            </a>
+        </nav>
+
+        <div class="header-actions">
+            <button
+                class="btn"
+                id="settingsButton"
+                type="button"
+                data-en="Settings"
+                data-ar="الإعدادات"
+            >
+                Settings
+            </button>
+
+            <a class="btn account-button" href="account.html" data-account-button>
+                <img class="account-avatar" alt="" hidden>
+                <span class="account-avatar-fallback" aria-hidden="true" hidden></span>
+                <span class="account-name" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</span>
+            </a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <main class="hero-content">
+            <div class="hero-images">
+                <img
+                    class="hero-home-image"
+                    src="assets/images/home_img.png"
+                    alt="Eco technology"
+                >
+            </div>
+
+            <p class="hero-subtitle" data-en="Eco Tech LLC" data-ar="إيكو تك ذ.م.م.">
+                Eco Tech LLC
+            </p>
+
+            <a
+                href="cars.html"
+                class="btn btn--shadow"
+                data-en="Go to Cars"
+                data-ar="الانتقال إلى السيارات"
+            >
+                Go to Cars
+            </a>
+        </main>
+    </section>
+
+    <dialog id="settingsDialog">
+        <form method="dialog">
+            <h2 data-en="Settings" data-ar="الإعدادات">
+                Settings
+            </h2>
+
+            <label for="languageSelect" data-en="Language" data-ar="اللغة">
+                Language
+            </label>
+
+            <select id="languageSelect" aria-label="Language">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+
+            <label for="themeSelect" data-en="Theme" data-ar="المظهر">
+                Theme
+            </label>
+
+            <select id="themeSelect" aria-label="Theme">
+                <option
+                    value="light"
+                    data-en="Light"
+                    data-ar="فاتح"
+                >
+                    Light
+                </option>
+                <option
+                    value="dark"
+                    data-en="Dark"
+                    data-ar="داكن"
+                >
+                    Dark
+                </option>
+            </select>
+
+            <div>
+                <button
+                    type="submit"
+                    data-en="Close"
+                    data-ar="إغلاق"
+                >
+                    Close
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const settingsButton = document.getElementById("settingsButton");
+        const settingsDialog = document.getElementById("settingsDialog");
+        const languageSelect = document.getElementById("languageSelect");
+        const themeSelect = document.getElementById("themeSelect");
+
+        const savedLanguage = localStorage.getItem("language") || "en";
+        const savedTheme = localStorage.getItem("theme") || "light";
+
+        languageSelect.value = savedLanguage;
+        themeSelect.value = savedTheme;
+
+        applyLanguage(savedLanguage);
+        applyTheme(savedTheme);
+
+        settingsButton.addEventListener("click", () => {
+            settingsDialog.showModal();
+        });
+
+        languageSelect.addEventListener("change", (event) => {
+            const language = event.target.value;
+
+            localStorage.setItem("language", language);
+            applyLanguage(language);
+        });
+
+        themeSelect.addEventListener("change", (event) => {
+            const theme = event.target.value;
+
+            localStorage.setItem("theme", theme);
+            applyTheme(theme);
+        });
+
+        function applyLanguage(language) {
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+
+            document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
+                if (element.tagName === "OPTION") {
+                    element.textContent = element.dataset[language];
+                } else {
+                    element.textContent = element.dataset[language];
+                }
+            });
+
+            document.title = document.querySelector("title").dataset[language];
+
+            languageSelect.setAttribute(
+                "aria-label",
+                language === "ar" ? "اللغة" : "Language"
+            );
+
+            themeSelect.setAttribute(
+                "aria-label",
+                language === "ar" ? "المظهر" : "Theme"
+            );
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme;
+        }
+    </script>
+    <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

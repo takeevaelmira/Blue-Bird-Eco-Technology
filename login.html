@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <title data-en="Sign in - Blue Bird Eco Technology" data-ar="تسجيل الدخول - بلو بيرد للتكنولوجيا البيئية">Sign in - Blue Bird Eco Technology</title>
+</head>
+<body>
+    <header class="header">
+        <a class="header-logo" href="index.html">
+            <img class="header-logo-icon" src="assets/images/logo.png" alt="Logo">
+            <span class="header-brand">Blue Bird</span>
+        </a>
+    </header>
+    <main class="auth-page">
+        <form id="authForm" class="auth-form">
+            <h1 data-en="Sign in" data-ar="تسجيل الدخول">Sign in</h1>
+            <label for="authEmail" data-en="Email" data-ar="البريد الإلكتروني">Email</label>
+            <input id="authEmail" type="email" autocomplete="email" required>
+            <label for="authPassword" data-en="Password" data-ar="كلمة المرور">Password</label>
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required>
+            <p id="authError" class="auth-error" role="alert" hidden></p>
+            <button id="signInBtn" type="submit" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+            <button id="signUpBtn" type="button" data-en="Create account" data-ar="إنشاء حساب">Create account</button>
+            <button id="googleBtn" type="button" data-en="Continue with Google" data-ar="المتابعة باستخدام Google">Continue with Google</button>
+        </form>
+    </main>
+    <script>
+        const savedLanguage = localStorage.getItem("language") || "en";
+        document.documentElement.lang = savedLanguage;
+        document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
+        document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
+            element.textContent = element.dataset[savedLanguage];
+        });
+        document.title = document.querySelector("title").dataset[savedLanguage];
+        document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    </script>
+    <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

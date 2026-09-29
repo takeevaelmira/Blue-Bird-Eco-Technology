@@ -1,0 +1,132 @@
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    border-radius: 5px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link[aria-current="page"] {
+    background-color: var(--section-color);
+    color: var(--text-color);
+}
+
+.nav-icon {
+    display: none;
+    width: 2.2rem;
+    height: 2.2rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.mobile-account-button {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .nav {
+        gap: 0.4rem;
+        padding: 0;
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-bottom: calc(7.2rem + env(safe-area-inset-bottom));
+    }
+
+    .nav {
+        position: fixed;
+        z-index: 20;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-areas: "home cars account";
+        gap: 0;
+        padding: 0.6rem 1.5rem calc(0.6rem + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--border-color);
+        background-color: var(--background-color);
+        font-size: 1.2rem;
+        direction: ltr;
+    }
+
+    .nav-link[href="index.html"] { grid-area: home; }
+    .nav-link[href="cars.html"] { grid-area: cars; }
+
+    .mobile-account-button {
+        display: flex;
+        grid-area: account;
+        color: var(--muted-text-color);
+    }
+
+    .mobile-account-button .account-avatar,
+    .mobile-account-button .account-avatar-fallback {
+        width: 2.4rem;
+        height: 2.4rem;
+        flex-basis: 2.4rem;
+    }
+
+    .mobile-account-button .account-avatar-fallback {
+        font-size: 1rem;
+    }
+
+    .mobile-account-icon.is-hidden { display: none; }
+
+    .mobile-account-button .account-name {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .header-actions .account-button {
+        display: none;
+    }
+
+    .nav-link {
+        display: flex;
+        min-height: 5.2rem;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    }
+
+    .nav-link[aria-current="page"] {
+        background-color: var(--section-color);
+        color: var(--text-color);
+        font-weight: 700;
+    }
+
+    .mobile-account-button:hover,
+    .mobile-account-button:focus-visible {
+        background-color: var(--section-color);
+        color: var(--text-color);
+    }
+
+    .nav-icon {
+        display: block;
+    }
+}
