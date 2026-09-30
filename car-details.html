@@ -74,7 +74,18 @@
                     <h1 id="vehicleTitle"></h1>
                     <p id="vehicleYear" class="vehicle-eyebrow"></p>
                     <p id="vehicleSubtitle" class="vehicle-subtitle"></p>
-                    <button id="vehicleFavoriteButton" class="favorite-button vehicle-favorite-button" type="button" data-favorite-button aria-pressed="false">☆</button>
+                    <div class="vehicle-actions">
+                        <button id="vehicleFavoriteButton" class="favorite-button" type="button" data-favorite-button aria-pressed="false" aria-label="Add to favorites">☆</button>
+                        <button id="vehicleShareButton" class="vehicle-share-button" type="button" aria-label="Share vehicle" title="Share vehicle">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="shareStatus" class="vehicle-share-status" role="status" aria-live="polite"></p>
                 </div>
                 <div class="vehicle-price-panel">
                     <p id="vehiclePrice" class="vehicle-price"></p>
@@ -143,6 +154,8 @@
         const mainVehiclePhoto = document.getElementById("mainVehiclePhoto");
         const vehicleSpecs = document.getElementById("vehicleSpecs");
         const vehicleFavoriteButton = document.getElementById("vehicleFavoriteButton");
+        const vehicleShareButton = document.getElementById("vehicleShareButton");
+        const shareStatus = document.getElementById("shareStatus");
         const expandedPhoto = document.getElementById("expandedPhoto");
         const photoDialog = document.getElementById("photoDialog");
         const vehicleId = new URLSearchParams(window.location.search).get("id");
@@ -161,6 +174,7 @@
         applyTheme(savedTheme);
 
         settingsButton.addEventListener("click", () => settingsDialog.showModal());
+        vehicleShareButton.addEventListener("click", shareVehicle);
         languageSelect.addEventListener("change", (event) => {
             localStorage.setItem("language", event.target.value);
             applyLanguage(event.target.value);
@@ -191,7 +205,35 @@
             themeSelect.setAttribute("aria-label", language === "ar" ? "المظهر" : "Theme");
             currencySelect.setAttribute("aria-label", language === "ar" ? "العملة" : "Display currency");
             document.querySelector(".photo-dialog-close").setAttribute("aria-label", language === "ar" ? "إغلاق الصورة" : "Close photo");
+            vehicleShareButton.setAttribute("aria-label", language === "ar" ? "مشاركة السيارة" : "Share vehicle");
+            vehicleShareButton.title = language === "ar" ? "مشاركة السيارة" : "Share vehicle";
             renderExchangeRate();
+        }
+
+        async function shareVehicle() {
+            const shareData = {
+                title: vehicleTitle.textContent,
+                url: window.location.href
+            };
+            shareStatus.textContent = "";
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (error) {
+                    if (error.name !== "AbortError") {
+                        shareStatus.textContent = getLocalizedText("Could not share this vehicle.", "تعذرت مشاركة هذه السيارة.");
+                    }
+                }
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+                shareStatus.textContent = getLocalizedText("Link copied to clipboard.", "تم نسخ الرابط.");
+            } catch (error) {
+                shareStatus.textContent = getLocalizedText("Sharing is unavailable in this browser.", "المشاركة غير متاحة في هذا المتصفح.");
+            }
         }
 
         function applyTheme(theme) {
