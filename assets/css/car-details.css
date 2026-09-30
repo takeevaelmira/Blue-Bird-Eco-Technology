@@ -82,8 +82,49 @@
     color: var(--muted-text-color);
 }
 
-.vehicle-favorite-button {
+.vehicle-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
     margin-top: 1.4rem;
+}
+
+.vehicle-share-button {
+    display: grid;
+    width: 4.4rem;
+    height: 4.4rem;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 50%;
+    background: var(--page-background) !important;
+    color: var(--text-color) !important;
+    cursor: pointer;
+}
+
+.vehicle-share-button svg {
+    width: 2rem;
+    height: 2rem;
+    fill: none;
+    stroke: var(--text-color) !important;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.vehicle-share-button:focus-visible {
+    outline: 2px solid #24776b;
+    outline-offset: 2px;
+}
+
+.vehicle-share-status {
+    margin: 0.6rem 0 0;
+    color: var(--muted-text-color);
+    font-size: 1.3rem;
+}
+
+.vehicle-share-status:empty {
+    display: none;
 }
 
 .vehicle-price-panel {
