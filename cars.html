@@ -136,7 +136,10 @@
         </form>
     </dialog>
 
-    <script>
+    <script type="module">
+        import { db } from "./assets/js/auth.js";
+        import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const settingsButton = document.getElementById("settingsButton");
         const settingsDialog = document.getElementById("settingsDialog");
         const languageSelect = document.getElementById("languageSelect");
@@ -455,6 +458,26 @@
                 : "—";
             details.textContent = `${year} · ${mileageText}`;
 
+            // Рейтинг на карточке
+            const ratingContainer = document.createElement("div");
+            ratingContainer.className = "car-rating-display";
+            ratingContainer.innerHTML = `<span class="car-rating-stars">★</span> <span>...</span>`;
+
+            // Запрос реальной оценки из Firestore
+            getDocs(collection(db, "cars", String(car.Id), "reviews")).then((snapshot) => {
+                let total = 0;
+                let count = snapshot.size;
+                snapshot.forEach(doc => total += (doc.data().rating || 0));
+                if (count > 0) {
+                    const avg = (total / count).toFixed(1);
+                    ratingContainer.innerHTML = `<span class="car-rating-stars">★</span> <span>${avg}</span> <span class="car-rating-count">(${count})</span>`;
+                } else {
+                    ratingContainer.innerHTML = `<span class="car-rating-stars">☆</span> <span>0.0</span> <span class="car-rating-count">(0)</span>`;
+                }
+            }).catch(() => {
+                ratingContainer.innerHTML = `<span class="car-rating-stars">☆</span> <span>0.0</span> <span class="car-rating-count">(0)</span>`;
+            });
+
             const specifications = document.createElement("p");
             specifications.className = "car-specifications";
             specifications.textContent = getCarSpecifications(car)
@@ -464,10 +487,12 @@
             const source = document.createElement("span");
             source.className = "car-source";
             source.textContent = getLocalizedText("View details", "عرض التفاصيل");
-            info.append(title, price, details);
+            
+            info.append(title, price, details, ratingContainer);
             info.append(source);
             link.append(imageFrame, info);
             if (specifications.textContent) link.append(specifications);
+
             const favoriteButton = document.createElement("button");
             favoriteButton.type = "button";
             favoriteButton.className = "favorite-button";
@@ -480,6 +505,7 @@
             favoriteButton.textContent = "☆";
             favoriteButton.setAttribute("aria-pressed", "false");
             favoriteButton.setAttribute("aria-label", getLocalizedText("Add to favorites", "إضافة إلى المفضلة"));
+
             card.append(link, favoriteButton);
             return card;
         }
@@ -487,6 +513,5 @@
         loadExchangeRate();
         loadCars();
     </script>
-    <script type="module" src="assets/js/auth.js"></script>
 </body>
 </html>
