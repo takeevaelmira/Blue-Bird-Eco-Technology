@@ -271,10 +271,213 @@
     object-fit: contain;
 }
 
+/* ----------------------------------- */
+/* Стили отзывов и рейтингов           */
+/* ----------------------------------- */
+.vehicle-reviews-section {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.reviews-summary-container {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 3rem;
+    align-items: center;
+    background: var(--surface-color);
+    padding: 2.4rem;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    border: 1px solid var(--border-color);
+}
+
+@media (max-width: 760px) {
+    .reviews-summary-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.reviews-score-box {
+    text-align: center;
+}
+
+.reviews-average-rating {
+    font-size: 4.8rem;
+    font-weight: 800;
+    color: #24776b;
+    margin: 0;
+    line-height: 1;
+}
+
+.reviews-stars-display {
+    font-size: 2.2rem;
+    color: #ffc107;
+    letter-spacing: 2px;
+    margin: 0.8rem 0;
+}
+
+.reviews-count-text {
+    color: var(--muted-text-color);
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.reviews-bars-box {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.review-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.3rem;
+    color: var(--muted-text-color);
+}
+
+.review-bar-label {
+    min-width: 5.5rem;
+}
+
+.review-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.review-bar-fill {
+    height: 100%;
+    background: #ffc107;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.review-bar-count {
+    min-width: 3rem;
+    text-align: right;
+}
+
+/* Список отзывов */
+.reviews-list {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.review-card {
+    background: var(--page-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.8rem;
+    display: grid;
+    gap: 1.2rem;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.review-avatar, .review-avatar-fallback {
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 50%;
+    flex: 0 0 4.2rem;
+}
+
+.review-avatar {
+    object-fit: cover;
+}
+
+.review-avatar-fallback {
+    display: grid;
+    place-items: center;
+    background: #24776b;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.review-user-info h4 {
+    margin: 0 0 0.2rem;
+    font-size: 1.5rem;
+}
+
+.review-user-stars {
+    color: #ffc107;
+    font-size: 1.4rem;
+}
+
+.review-text {
+    margin: 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Форма отзыва */
+.review-form-container {
+    background: var(--surface-color);
+    padding: 2.4rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.review-form-container h3 {
+    margin-top: 0;
+    margin-bottom: 1.6rem;
+    font-size: 2rem;
+}
+
+.review-form {
+    display: grid;
+    gap: 1.4rem;
+}
+
+.review-form label {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.review-form select,
+.review-form textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--page-background);
+    color: var(--text-color);
+    font: inherit;
+}
+
+.review-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.review-guest-prompt {
+    padding: 2.4rem;
+    text-align: center;
+    background: var(--surface-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.review-guest-prompt a {
+    color: #24776b;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
 :root[data-theme="dark"] .vehicle-eyebrow,
 :root[data-theme="dark"] .vehicle-price,
 :root[data-theme="dark"] .vehicle-back,
-:root[data-theme="dark"] .vehicle-source {
+:root[data-theme="dark"] .vehicle-source,
+:root[data-theme="dark"] .reviews-average-rating,
+:root[data-theme="dark"] .review-guest-prompt a {
     color: #78c7b5;
 }
 
