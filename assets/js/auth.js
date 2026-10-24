@@ -18,7 +18,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Конфигурация Firebase
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCp-qPQ6SGjFTLP8U-wUpz3IkZ2plPpnqw",
   authDomain: "blue-bird-eco-technology.firebaseapp.com",
@@ -30,15 +29,15 @@ const firebaseConfig = {
 };
 
 // Инициализация Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 // Состояние и глобальные ссылки
 let currentUser = null;
 let unsubscribeFavorites = null;
-const userFavoritesMap = new Map(); // Хранит загруженные из Firestore автомобили
+const userFavoritesMap = new Map();
 
 // Элементы модального окна профиля
 const profileAvatar = document.getElementById("profileAvatar");
@@ -76,7 +75,6 @@ onAuthStateChanged(auth, (user) => {
     }
 
     if (user) {
-        // Подписка на коллекцию 'favorites' текущего пользователя
         const favsRef = collection(db, "users", user.uid, "favorites");
         unsubscribeFavorites = onSnapshot(favsRef, (snapshot) => {
             userFavoritesMap.clear();
@@ -93,6 +91,9 @@ onAuthStateChanged(auth, (user) => {
         updateFavoriteButtonsUI();
         renderProfileFavorites();
     }
+
+    // Уведомляем другие скрипты об изменении статуса входа
+    document.dispatchEvent(new CustomEvent("auth-state-changed", { detail: { user } }));
 });
 
 document.addEventListener("change", (event) => {
@@ -135,7 +136,6 @@ async function handleFavoriteToggle(button) {
     }
 }
 
-// Глобальный слушатель кликов по кнопкам "Добавить в избранное"
 document.addEventListener("click", (event) => {
     const favButton = event.target.closest("[data-favorite-button]");
     if (favButton) {
@@ -143,12 +143,10 @@ document.addEventListener("click", (event) => {
     }
 });
 
-// Событие обновления списка (для принудительной синхронизации UI)
 document.addEventListener("bluebird-favorites-refresh", () => {
     updateFavoriteButtonsUI();
 });
 
-// Обновление состояния кнопок в интерфейсе
 function updateFavoriteButtonsUI() {
     const favButtons = document.querySelectorAll("[data-favorite-button]");
     favButtons.forEach((btn) => {
@@ -276,7 +274,6 @@ function updateAccountUI(user) {
     }
 }
 
-// Клики по кнопке профиля / входа
 document.querySelectorAll("[data-account-button]").forEach((btn) => {
     btn.addEventListener("click", () => {
         window.location.href = "account.html";
@@ -290,7 +287,6 @@ if (profileSignOut) {
     });
 }
 
-// Логика формы на странице login.html
 if (authForm) {
     authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
