@@ -167,10 +167,10 @@
 
 .car-info {
     display: flex;
-    min-height: 15rem;
+    min-height: 16.5rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.9rem;
+    gap: 0.8rem;
     padding: 1.6rem;
 }
 
@@ -197,6 +197,26 @@
     color: var(--muted-text-color);
     font-size: 1.3rem;
     line-height: 1.6;
+}
+
+.car-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.car-rating-stars {
+    color: #ffc107;
+    letter-spacing: 1px;
+}
+
+.car-rating-count {
+    color: var(--muted-text-color);
+    font-weight: 400;
 }
 
 .car-specifications {
