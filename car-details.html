@@ -109,6 +109,24 @@
                 data-en="Open original Encar listing" data-ar="فتح الإعلان الأصلي في إنكار">
                 Open original Encar listing
             </a>
+
+            <!-- Секция отзывов и рейтингов -->
+            <section class="vehicle-reviews-section" aria-labelledby="reviewsTitle">
+                <h2 id="reviewsTitle" data-en="Reviews & Ratings" data-ar="التقييمات والآراء">Reviews & Ratings</h2>
+                
+                <div class="reviews-summary-container">
+                    <div class="reviews-score-box">
+                        <p id="avgRatingNumber" class="reviews-average-rating">0.0</p>
+                        <div id="avgRatingStars" class="reviews-stars-display">☆☆☆☆☆</div>
+                        <p id="totalReviewsCount" class="reviews-count-text" data-en="Based on 0 reviews" data-ar="بناءً على 0 تقييم">Based on 0 reviews</p>
+                    </div>
+                    <div id="ratingBarsBox" class="reviews-bars-box"></div>
+                </div>
+
+                <div id="reviewsList" class="reviews-list"></div>
+
+                <div id="reviewFormWrapper"></div>
+            </section>
         </article>
     </main>
 
@@ -138,7 +156,10 @@
         </form>
     </dialog>
 
-    <script>
+    <script type="module">
+        import { db, auth } from "./assets/js/auth.js";
+        import { collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const settingsButton = document.getElementById("settingsButton");
         const settingsDialog = document.getElementById("settingsDialog");
         const languageSelect = document.getElementById("languageSelect");
@@ -179,6 +200,7 @@
             localStorage.setItem("language", event.target.value);
             applyLanguage(event.target.value);
             renderVehicle();
+            loadVehicleReviews();
         });
         themeSelect.addEventListener("change", (event) => {
             localStorage.setItem("theme", event.target.value);
@@ -189,6 +211,10 @@
             renderPrice();
         });
         mainPhotoButton.addEventListener("click", () => openPhoto(mainVehiclePhoto.src, mainVehiclePhoto.alt));
+
+        document.addEventListener("auth-state-changed", () => {
+            loadVehicleReviews();
+        });
 
         function getLocalizedText(english, arabic) {
             return languageSelect.value === "ar" ? arabic : english;
@@ -440,6 +466,154 @@
             renderPrice();
         }
 
+        async function loadVehicleReviews() {
+            const reviewsList = document.getElementById("reviewsList");
+            const ratingBarsBox = document.getElementById("ratingBarsBox");
+            const avgRatingNumber = document.getElementById("avgRatingNumber");
+            const avgRatingStars = document.getElementById("avgRatingStars");
+            const totalReviewsCount = document.getElementById("totalReviewsCount");
+            const reviewFormWrapper = document.getElementById("reviewFormWrapper");
+
+            if (!vehicleId) return;
+
+            try {
+                const reviewsRef = collection(db, "cars", String(vehicleId), "reviews");
+                const q = query(reviewsRef, orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+
+                let totalScore = 0;
+                let count = snapshot.size;
+                const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+                const reviews = [];
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    reviews.push(data);
+                    totalScore += data.rating;
+                    if (counts[data.rating] !== undefined) counts[data.rating]++;
+                });
+
+                const avg = count > 0 ? (totalScore / count).toFixed(1) : "0.0";
+                avgRatingNumber.textContent = avg;
+                avgRatingStars.textContent = "★".repeat(Math.round(Number(avg))) + "☆".repeat(5 - Math.round(Number(avg)));
+                totalReviewsCount.textContent = languageSelect.value === "ar" 
+                    ? `بناءً على ${count} تقييم` 
+                    : `Based on ${count} reviews`;
+
+                ratingBarsBox.replaceChildren();
+                [5, 4, 3, 2, 1].forEach(star => {
+                    const percent = count > 0 ? (counts[star] / count) * 100 : 0;
+                    const row = document.createElement("div");
+                    row.className = "review-bar-row";
+                    row.innerHTML = `
+                        <span class="review-bar-label">${star} ${languageSelect.value === "ar" ? "نجوم" : "stars"}</span>
+                        <div class="review-bar-track"><div class="review-bar-fill" style="width: ${percent}%"></div></div>
+                        <span class="review-bar-count">(${counts[star]})</span>
+                    `;
+                    ratingBarsBox.append(row);
+                });
+
+                reviewsList.replaceChildren();
+                if (reviews.length === 0) {
+                    const emptyMsg = document.createElement("p");
+                    emptyMsg.textContent = languageSelect.value === "ar" ? "لا توجد تقييمات حتى الآن. كن أول من يقيّم!" : "No reviews yet. Be the first to review!";
+                    emptyMsg.style.color = "var(--muted-text-color)";
+                    reviewsList.append(emptyMsg);
+                } else {
+                    reviews.forEach(rev => {
+                        const card = document.createElement("div");
+                        card.className = "review-card";
+                        
+                        const header = document.createElement("div");
+                        header.className = "review-header";
+                        
+                        if (rev.userPhoto) {
+                            const img = document.createElement("img");
+                            img.className = "review-avatar";
+                            img.src = rev.userPhoto;
+                            header.append(img);
+                        } else {
+                            const fallback = document.createElement("div");
+                            fallback.className = "review-avatar-fallback";
+                            fallback.textContent = (rev.userName || "U").charAt(0).toUpperCase();
+                            header.append(fallback);
+                        }
+
+                        const userInfo = document.createElement("div");
+                        userInfo.className = "review-user-info";
+                        userInfo.innerHTML = `
+                            <h4>${rev.userName || "Anonymous"}</h4>
+                            <div class="review-user-stars">${"★".repeat(rev.rating)}${"☆".repeat(5 - rev.rating)}</div>
+                        `;
+                        header.append(userInfo);
+                        card.append(header);
+
+                        const text = document.createElement("p");
+                        text.className = "review-text";
+                        text.textContent = rev.text;
+                        card.append(text);
+
+                        reviewsList.append(card);
+                    });
+                }
+
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    reviewFormWrapper.innerHTML = `
+                        <div class="review-form-container">
+                            <h3>${languageSelect.value === "ar" ? "اترك تقييماً" : "Leave a Review"}</h3>
+                            <form id="reviewForm" class="review-form">
+                                <label for="reviewRating">${languageSelect.value === "ar" ? "التقييم" : "Rating"}</label>
+                                <select id="reviewRating">
+                                    <option value="5">★★★★★ (5)</option>
+                                    <option value="4">★★★★☆ (4)</option>
+                                    <option value="3">★★★☆☆ (3)</option>
+                                    <option value="2">★★☆☆☆ (2)</option>
+                                    <option value="1">★☆☆☆☆ (1)</option>
+                                </select>
+                                <label for="reviewText">${languageSelect.value === "ar" ? "التعليق" : "Comment"}</label>
+                                <textarea id="reviewText" required placeholder="${languageSelect.value === "ar" ? "اكتب تعليقك هنا..." : "Write your comment here..."}"></textarea>
+                                <button type="submit" class="btn">${languageSelect.value === "ar" ? "إرسال التقييم" : "Submit Review"}</button>
+                            </form>
+                        </div>
+                    `;
+
+                    document.getElementById("reviewForm").addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        const rating = Number(document.getElementById("reviewRating").value);
+                        const text = document.getElementById("reviewText").value.trim();
+                        if (!text) return;
+
+                        try {
+                            await addDoc(collection(db, "cars", String(vehicleId), "reviews"), {
+                                userId: currentUser.uid,
+                                userName: currentUser.displayName || currentUser.email.split("@")[0],
+                                userPhoto: currentUser.photoURL || "",
+                                rating,
+                                text,
+                                createdAt: new Date().toISOString()
+                            });
+                            document.getElementById("reviewText").value = "";
+                            loadVehicleReviews();
+                        } catch (err) {
+                            alert(languageSelect.value === "ar" ? "تعذر إرسال التقييم." : "Could not submit review.");
+                        }
+                    });
+                } else {
+                    reviewFormWrapper.innerHTML = `
+                        <div class="review-guest-prompt">
+                            <p>
+                                ${languageSelect.value === "ar" ? "يرجى <a href='login.html'>تسجيل الدخول</a> لكتابة تقييم." : "Please <a href='login.html'>sign in</a> to write a review."}
+                            </p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error loading reviews:", error);
+            }
+        }
+
         async function loadVehicle() {
             if (!/^\d+$/.test(vehicleId || "")) {
                 detailStatus.textContent = getLocalizedText("Invalid vehicle listing.", "إعلان السيارة غير صالح.");
@@ -452,6 +626,7 @@
                 await renderVehicle();
                 vehicleContent.hidden = false;
                 detailStatus.hidden = true;
+                loadVehicleReviews();
             } catch (error) {
                 detailStatus.textContent = getLocalizedText(
                     "Could not load this vehicle. It may no longer be listed.",
@@ -463,6 +638,5 @@
         loadExchangeRate();
         loadVehicle();
     </script>
-    <script type="module" src="assets/js/auth.js"></script>
 </body>
 </html>
