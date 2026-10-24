@@ -8,5 +8,13 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['id', 'title', 'image', 'year', 'price', 'updatedAt'])
         && request.resource.data.id == carId;
     }
+    
+    // Правила для отзывов к автомобилям
+    match /cars/{carId}/reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.auth != null 
+        && request.auth.uid == request.resource.data.userId
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userPhoto', 'rating', 'text', 'createdAt']);
+    }
   }
 }
