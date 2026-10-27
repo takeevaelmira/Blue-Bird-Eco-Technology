@@ -6,7 +6,8 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
     getFirestore,
@@ -55,7 +56,6 @@ const authForm = document.getElementById("authForm");
 const authEmail = document.getElementById("authEmail");
 const authPassword = document.getElementById("authPassword");
 const authError = document.getElementById("authError");
-const signUpBtn = document.getElementById("signUpBtn");
 const googleBtn = document.getElementById("googleBtn");
 
 // -------------------------------------------------------------
@@ -287,28 +287,25 @@ if (profileSignOut) {
     });
 }
 
-// В assets/js/auth.js внутри слушателя authForm.addEventListener("submit", ...)
-// Можно сделать так:
-
+// Обработка отправки формы авторизации / регистрации
 if (authForm) {
     authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         showAuthError("");
 
-        // Проверяем по видимости поля имени, какая вкладка сейчас активна
-        const isRegister = !document.getElementById("nameFieldGroup").hidden;
+        const nameFieldGroup = document.getElementById("nameFieldGroup");
+        const isRegister = nameFieldGroup && !nameFieldGroup.hidden;
 
         try {
             if (isRegister) {
-                // Логика регистрации
+                // Регистрация
                 const userCredential = await createUserWithEmailAndPassword(auth, authEmail.value, authPassword.value);
-                // Если пользователь указал имя, можно обновить профиль (опционально)
                 const nameInput = document.getElementById("authName");
-                if (nameInput && nameInput.value && window.updateProfile) {
-                    await updateProfile(userCredential.user, { displayName: nameInput.value });
+                if (nameInput && nameInput.value.trim()) {
+                    await updateProfile(userCredential.user, { displayName: nameInput.value.trim() });
                 }
             } else {
-                // Логика входа
+                // Вход
                 await signInWithEmailAndPassword(auth, authEmail.value, authPassword.value);
             }
             window.location.href = "index.html";
@@ -318,34 +315,17 @@ if (authForm) {
     });
 }
 
-    if (signUpBtn) {
-        signUpBtn.addEventListener("click", async () => {
-            showAuthError("");
-            if (!authEmail.value || !authPassword.value) {
-                showAuthError("Please fill in email and password.");
-                return;
-            }
-
-            try {
-                await createUserWithEmailAndPassword(auth, authEmail.value, authPassword.value);
-                window.location.href = "index.html";
-            } catch (error) {
-                showAuthError(error.message);
-            }
-        });
-    }
-
-    if (googleBtn) {
-        googleBtn.addEventListener("click", async () => {
-            showAuthError("");
-            try {
-                await signInWithPopup(auth, googleProvider);
-                window.location.href = "index.html";
-            } catch (error) {
-                showAuthError(error.message);
-            }
-        });
-    }
+// Вход через Google
+if (googleBtn) {
+    googleBtn.addEventListener("click", async () => {
+        showAuthError("");
+        try {
+            await signInWithPopup(auth, googleProvider);
+            window.location.href = "index.html";
+        } catch (error) {
+            showAuthError(error.message);
+        }
+    });
 }
 
 function showAuthError(msg) {
