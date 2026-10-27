@@ -8,6 +8,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css?v=4">
     <title data-en="Sign in - Blue Bird Eco Technology" data-ar="تسجيل الدخول - بلو بيرد للتكنولوجيا البيئية">Sign in - Blue Bird Eco Technology</title>
+    <style>
+        /* Дополнительные стили для переключателя и кнопки Google в рамках задачи */
+        .auth-mode-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: var(--surface-color);
+            padding: 0.4rem;
+            border-radius: 6px;
+            margin-bottom: 1.6rem;
+        }
+        .auth-mode-btn {
+            background: transparent !important;
+            border: none !important;
+            color: var(--muted-text-color) !important;
+            font-weight: 700;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .auth-mode-btn.active {
+            background: var(--page-background) !important;
+            color: var(--text-color) !important;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+        }
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: var(--page-background) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
+            font-weight: 600;
+        }
+        .google-icon {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #4285F4;
+            line-height: 1;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -18,26 +61,85 @@
     </header>
     <main class="auth-page">
         <form id="authForm" class="auth-form">
-            <h1 data-en="Sign in" data-ar="تسجيل الدخول">Sign in</h1>
+            <!-- Переключатель режима: Вход / Регистрация -->
+            <div class="auth-mode-switch">
+                <button type="button" id="modeSignIn" class="auth-mode-btn active" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+                <button type="button" id="modeSignUp" class="auth-mode-btn" data-en="Register" data-ar="إنشاء حساب">Register</button>
+            </div>
+
+            <h1 id="authHeading" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</h1>
+
+            <!-- Поле имени (видно только при регистрации) -->
+            <div id="nameFieldGroup" hidden>
+                <label for="authName" data-en="Name" data-ar="الاسم">Name</label>
+                <input id="authName" type="text" autocomplete="name">
+            </div>
+
             <label for="authEmail" data-en="Email" data-ar="البريد الإلكتروني">Email</label>
             <input id="authEmail" type="email" autocomplete="email" required>
+
             <label for="authPassword" data-en="Password" data-ar="كلمة المرور">Password</label>
             <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required>
+
             <p id="authError" class="auth-error" role="alert" hidden></p>
-            <button id="signInBtn" type="submit" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
-            <button id="signUpBtn" type="button" data-en="Create account" data-ar="إنشاء حساب">Create account</button>
-            <button id="googleBtn" type="button" data-en="Continue with Google" data-ar="المتابعة باستخدام Google">Continue with Google</button>
+
+            <!-- Основная кнопка (динамическая текст) -->
+            <button id="primaryAuthBtn" type="submit" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+
+            <!-- Кнопка входа через Google с буквой G слева -->
+            <button id="googleBtn" type="button" class="google-btn">
+                <span class="google-icon">G</span>
+                <span data-en="Continue with Google" data-ar="المتابعة باستخدام Google">Continue with Google</span>
+            </button>
         </form>
     </main>
+
     <script>
         const savedLanguage = localStorage.getItem("language") || "en";
         document.documentElement.lang = savedLanguage;
         document.documentElement.dir = savedLanguage === "ar" ? "rtl" : "ltr";
         document.querySelectorAll("[data-en][data-ar]").forEach((element) => {
-            element.textContent = element.dataset[savedLanguage];
+            if (element.tagName !== "INPUT") {
+                element.textContent = element.dataset[savedLanguage];
+            }
         });
         document.title = document.querySelector("title").dataset[savedLanguage];
         document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+
+        // Логика переключения интерфейса (Вход / Регистрация)
+        const modeSignIn = document.getElementById("modeSignIn");
+        const modeSignUp = document.getElementById("modeSignUp");
+        const authHeading = document.getElementById("authHeading");
+        const nameFieldGroup = document.getElementById("nameFieldGroup");
+        const primaryAuthBtn = document.getElementById("primaryAuthBtn");
+
+        let isSignUpMode = false;
+
+        function setMode(signUp) {
+            isSignUpMode = signUp;
+            const lang = savedLanguage;
+
+            if (signUp) {
+                modeSignUp.classList.add("active");
+                modeSignIn.classList.remove("active");
+                authHeading.textContent = lang === "ar" ? "إنشاء حساب" : "Create account";
+                nameFieldGroup.hidden = false;
+                primaryAuthBtn.textContent = lang === "ar" ? "إنشاء حساب" : "Create account";
+                primaryAuthBtn.dataset.en = "Create account";
+                primaryAuthBtn.dataset.ar = "إنشاء حساب";
+            } else {
+                modeSignIn.classList.add("active");
+                modeSignUp.classList.remove("active");
+                authHeading.textContent = lang === "ar" ? "تسجيل الدخول" : "Sign in";
+                nameFieldGroup.hidden = true;
+                primaryAuthBtn.textContent = lang === "ar" ? "تسجيل الدخول" : "Sign in";
+                primaryAuthBtn.dataset.en = "Sign in";
+                primaryAuthBtn.dataset.ar = "تسجيل الدخول";
+            }
+        }
+
+        modeSignIn.addEventListener("click", () => setMode(false));
+        modeSignUp.addEventListener("click", () => setMode(true));
     </script>
     <script type="module" src="assets/js/auth.js"></script>
 </body>
