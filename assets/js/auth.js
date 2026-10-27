@@ -287,18 +287,36 @@ if (profileSignOut) {
     });
 }
 
+// В assets/js/auth.js внутри слушателя authForm.addEventListener("submit", ...)
+// Можно сделать так:
+
 if (authForm) {
     authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         showAuthError("");
 
+        // Проверяем по видимости поля имени, какая вкладка сейчас активна
+        const isRegister = !document.getElementById("nameFieldGroup").hidden;
+
         try {
-            await signInWithEmailAndPassword(auth, authEmail.value, authPassword.value);
+            if (isRegister) {
+                // Логика регистрации
+                const userCredential = await createUserWithEmailAndPassword(auth, authEmail.value, authPassword.value);
+                // Если пользователь указал имя, можно обновить профиль (опционально)
+                const nameInput = document.getElementById("authName");
+                if (nameInput && nameInput.value && window.updateProfile) {
+                    await updateProfile(userCredential.user, { displayName: nameInput.value });
+                }
+            } else {
+                // Логика входа
+                await signInWithEmailAndPassword(auth, authEmail.value, authPassword.value);
+            }
             window.location.href = "index.html";
         } catch (error) {
             showAuthError(error.message);
         }
     });
+}
 
     if (signUpBtn) {
         signUpBtn.addEventListener("click", async () => {
